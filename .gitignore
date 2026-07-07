@@ -1,0 +1,13 @@
+build/
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.elf
+*.hex
+*.bin
+*.uf2
+.DS_Store
+CMakeCache.txt
+compile_commands.json
