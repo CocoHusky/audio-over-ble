@@ -37,3 +37,4 @@ target_include_directories(app PRIVATE
   "${LC3_DIR}/include"
   "${LC3_DIR}/src"
 )
+target_compile_definitions(app PRIVATE "lc3_encoder_disable_ltpf(x)=((void)0)")
