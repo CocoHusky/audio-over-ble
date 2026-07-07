@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-"""
-Desktop control panel for the raw BLE microphone stream.
-"""
+"""Small stable desktop control panel for the raw BLE microphone stream."""
 
 from __future__ import annotations
 
@@ -29,8 +27,8 @@ class BleAudioControlApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("BLE Mic Monitor")
-        self.root.geometry("820x900")
-        self.root.minsize(720, 720)
+        self.root.geometry("760x560")
+        self.root.minsize(660, 480)
 
         self.state: AudioStreamState | None = None
         self.worker: threading.Thread | None = None
@@ -40,38 +38,24 @@ class BleAudioControlApp:
 
         self.gain = tk.DoubleVar(value=1.0)
         self.muted = tk.BooleanVar(value=False)
-        self.auto_reconnect = tk.BooleanVar(value=True)
+        self.auto_reconnect = tk.BooleanVar(value=False)
         self.adaptive_buffer_enabled = tk.BooleanVar(value=True)
-        self.target_latency_ms = tk.DoubleVar(value=250.0)
-        self.highpass_enabled = tk.BooleanVar(value=False)
-        self.highpass_cutoff = tk.DoubleVar(value=100.0)
-        self.lowpass_enabled = tk.BooleanVar(value=False)
-        self.lowpass_cutoff = tk.DoubleVar(value=7000.0)
-        self.gate_enabled = tk.BooleanVar(value=False)
-        self.gate_threshold = tk.DoubleVar(value=120.0)
-        self.noise_suppression_enabled = tk.BooleanVar(value=False)
-        self.noise_suppression_strength = tk.DoubleVar(value=0.55)
+        self.target_latency_ms = tk.DoubleVar(value=350.0)
+        self.max_latency_ms = tk.DoubleVar(value=1200.0)
+        self.declick_enabled = tk.BooleanVar(value=True)
+        self.limiter_enabled = tk.BooleanVar(value=True)
         self.agc_enabled = tk.BooleanVar(value=False)
         self.agc_target = tk.DoubleVar(value=1800.0)
-        self.agc_max_gain = tk.DoubleVar(value=18.0)
-        self.compressor_enabled = tk.BooleanVar(value=False)
-        self.compressor_threshold = tk.DoubleVar(value=9000.0)
-        self.compressor_ratio = tk.DoubleVar(value=3.0)
-        self.compressor_makeup = tk.DoubleVar(value=1.0)
-        self.declick_enabled = tk.BooleanVar(value=True)
-        self.declick_max_step = tk.DoubleVar(value=6000.0)
-        self.limiter_enabled = tk.BooleanVar(value=True)
-        self.max_latency_ms = tk.DoubleVar(value=700.0)
+        self.agc_max_gain = tk.DoubleVar(value=12.0)
 
         self.status = tk.StringVar(value="Disconnected")
         self.device = tk.StringVar(value="")
         self.save_label = tk.StringVar(value="Not recording")
-        self.packet_label = tk.StringVar(value="packets=0 lost=0")
+        self.packet_label = tk.StringVar(value="packets=0 lost=0 bad=0")
         self.queue_label = tk.StringVar(value="queued=0 concealed=0 underflows=0 refills=0")
         self.input_level_label = tk.StringVar(value="input rms=0 peak=0")
         self.output_level_label = tk.StringVar(value="output rms=0 peak=0")
         self.agc_label = tk.StringVar(value="agc gain=1.0x")
-        self.noise_label = tk.StringVar(value="noise floor=0")
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
@@ -85,127 +69,42 @@ class BleAudioControlApp:
         header.pack(fill="x")
         self.connect_button = ttk.Button(header, text="Connect", command=self.toggle_connection)
         self.connect_button.pack(side="left")
-        ttk.Checkbutton(
-            header,
-            text="Auto reconnect",
-            variable=self.auto_reconnect,
-        ).pack(side="left", padx=12)
+        ttk.Checkbutton(header, text="Auto reconnect", variable=self.auto_reconnect).pack(side="left", padx=12)
         ttk.Label(header, textvariable=self.status).pack(side="left", padx=12)
 
-        playback = ttk.LabelFrame(outer, text="Playback")
+        playback = ttk.LabelFrame(outer, text=f"Playback ({SAMPLE_RATE_HZ} Hz stable raw PCM)")
         playback.pack(fill="x", pady=(14, 0))
-        self._slider(playback, "Gain", self.gain, 0.0, 30.0, "x")
-        mute_row = ttk.Frame(playback, padding=(10, 0, 10, 10))
-        mute_row.pack(fill="x")
-        ttk.Checkbutton(
-            mute_row,
-            text="Mute",
-            variable=self.muted,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        ttk.Checkbutton(
-            mute_row,
-            text="Limiter",
-            variable=self.limiter_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left", padx=16)
+        self._slider(playback, "Gain", self.gain, 0.0, 20.0, "x")
+        row = ttk.Frame(playback, padding=(10, 0, 10, 10))
+        row.pack(fill="x")
+        ttk.Checkbutton(row, text="Mute", variable=self.muted, command=self.apply_realtime_controls).pack(side="left")
+        ttk.Checkbutton(row, text="Limiter", variable=self.limiter_enabled, command=self.apply_realtime_controls).pack(side="left", padx=16)
+        ttk.Checkbutton(row, text="De-click", variable=self.declick_enabled, command=self.apply_realtime_controls).pack(side="left", padx=16)
 
-        stabilizer = ttk.LabelFrame(outer, text="Stability")
-        stabilizer.pack(fill="x", pady=(14, 0))
-        stable_row = ttk.Frame(stabilizer, padding=(10, 10, 10, 0))
-        stable_row.pack(fill="x")
-        ttk.Checkbutton(
-            stable_row,
-            text="Adaptive buffer",
-            variable=self.adaptive_buffer_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        ttk.Checkbutton(
-            stable_row,
-            text="De-click",
-            variable=self.declick_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left", padx=16)
-        self._slider(stabilizer, "Target queue", self.target_latency_ms, 100.0, 800.0, "ms")
-        self._slider(stabilizer, "Max queue", self.max_latency_ms, 200.0, 1500.0, "ms")
-        self._slider(stabilizer, "Max sample step", self.declick_max_step, 1000.0, 20000.0, "")
+        stability = ttk.LabelFrame(outer, text="Stability")
+        stability.pack(fill="x", pady=(14, 0))
+        row = ttk.Frame(stability, padding=(10, 10, 10, 0))
+        row.pack(fill="x")
+        ttk.Checkbutton(row, text="Adaptive buffer", variable=self.adaptive_buffer_enabled, command=self.apply_realtime_controls).pack(side="left")
+        self._slider(stability, "Target queue", self.target_latency_ms, 150.0, 1000.0, "ms")
+        self._slider(stability, "Max queue", self.max_latency_ms, 300.0, 2500.0, "ms")
 
-        filters = ttk.LabelFrame(outer, text="Filters")
-        filters.pack(fill="x", pady=(14, 0))
-        hp_row = ttk.Frame(filters, padding=(10, 10, 10, 0))
-        hp_row.pack(fill="x")
-        ttk.Checkbutton(
-            hp_row,
-            text="High-pass",
-            variable=self.highpass_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        self._slider(filters, "HP cutoff", self.highpass_cutoff, 20.0, 300.0, "Hz")
-        lp_row = ttk.Frame(filters, padding=(10, 8, 10, 0))
-        lp_row.pack(fill="x")
-        ttk.Checkbutton(
-            lp_row,
-            text="Low-pass",
-            variable=self.lowpass_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        self._slider(filters, "LP cutoff", self.lowpass_cutoff, 1500.0, 7800.0, "Hz")
-
-        gate_row = ttk.Frame(filters, padding=(10, 8, 10, 0))
-        gate_row.pack(fill="x")
-        ttk.Checkbutton(
-            gate_row,
-            text="Noise gate",
-            variable=self.gate_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        self._slider(filters, "Gate threshold", self.gate_threshold, 0.0, 1000.0, "")
-        ns_row = ttk.Frame(filters, padding=(10, 8, 10, 0))
-        ns_row.pack(fill="x")
-        ttk.Checkbutton(
-            ns_row,
-            text="Noise suppress",
-            variable=self.noise_suppression_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        ttk.Label(ns_row, textvariable=self.noise_label).pack(side="left", padx=16)
-        self._slider(filters, "NS strength", self.noise_suppression_strength, 0.0, 0.95, "")
-
-        agc = ttk.LabelFrame(outer, text="AGC")
+        agc = ttk.LabelFrame(outer, text="Optional AGC")
         agc.pack(fill="x", pady=(14, 0))
-        agc_row = ttk.Frame(agc, padding=(10, 10, 10, 0))
-        agc_row.pack(fill="x")
-        ttk.Checkbutton(
-            agc_row,
-            text="Enable AGC",
-            variable=self.agc_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        ttk.Label(agc_row, textvariable=self.agc_label).pack(side="left", padx=16)
+        row = ttk.Frame(agc, padding=(10, 10, 10, 0))
+        row.pack(fill="x")
+        ttk.Checkbutton(row, text="Enable AGC", variable=self.agc_enabled, command=self.apply_realtime_controls).pack(side="left")
+        ttk.Label(row, textvariable=self.agc_label).pack(side="left", padx=16)
         self._slider(agc, "Target RMS", self.agc_target, 300.0, 5000.0, "")
-        self._slider(agc, "Max AGC gain", self.agc_max_gain, 1.0, 30.0, "x")
-
-        dynamics = ttk.LabelFrame(outer, text="Dynamics")
-        dynamics.pack(fill="x", pady=(14, 0))
-        dyn_row = ttk.Frame(dynamics, padding=(10, 10, 10, 0))
-        dyn_row.pack(fill="x")
-        ttk.Checkbutton(
-            dyn_row,
-            text="Compressor",
-            variable=self.compressor_enabled,
-            command=self.apply_realtime_controls,
-        ).pack(side="left")
-        self._slider(dynamics, "Comp threshold", self.compressor_threshold, 1000.0, 25000.0, "")
-        self._slider(dynamics, "Comp ratio", self.compressor_ratio, 1.0, 12.0, ":1")
-        self._slider(dynamics, "Makeup gain", self.compressor_makeup, 0.5, 4.0, "x")
+        self._slider(agc, "Max AGC gain", self.agc_max_gain, 1.0, 20.0, "x")
 
         record = ttk.LabelFrame(outer, text="Recording")
         record.pack(fill="x", pady=(14, 0))
-        record_row = ttk.Frame(record, padding=10)
-        record_row.pack(fill="x")
-        ttk.Button(record_row, text="Choose WAV", command=self.choose_save_path).pack(side="left")
-        ttk.Button(record_row, text="Clear", command=self.clear_save_path).pack(side="left", padx=8)
-        ttk.Label(record_row, textvariable=self.save_label).pack(side="left", padx=8)
+        row = ttk.Frame(record, padding=10)
+        row.pack(fill="x")
+        ttk.Button(row, text="Choose WAV", command=self.choose_save_path).pack(side="left")
+        ttk.Button(row, text="Clear", command=self.clear_save_path).pack(side="left", padx=8)
+        ttk.Label(row, textvariable=self.save_label).pack(side="left", padx=8)
 
         stats = ttk.LabelFrame(outer, text="Live Stats")
         stats.pack(fill="both", expand=True, pady=(14, 0))
@@ -221,14 +120,7 @@ class BleAudioControlApp:
         row = ttk.Frame(parent, padding=(10, 8, 10, 0))
         row.pack(fill="x")
         ttk.Label(row, text=label, width=16).pack(side="left")
-        scale = ttk.Scale(
-            row,
-            from_=start,
-            to=end,
-            orient="horizontal",
-            variable=variable,
-            command=lambda _value: self.apply_realtime_controls(),
-        )
+        scale = ttk.Scale(row, from_=start, to=end, orient="horizontal", variable=variable, command=lambda _value: self.apply_realtime_controls())
         scale.pack(side="left", fill="x", expand=True, padx=8)
         value = ttk.Label(row, width=10)
         value.pack(side="left")
@@ -237,8 +129,6 @@ class BleAudioControlApp:
             current = variable.get()
             if suffix == "x":
                 text = f"{current:.1f}x"
-            elif suffix == ":1":
-                text = f"{current:.1f}:1"
             elif current < 10 and suffix == "":
                 text = f"{current:.2f}"
             else:
@@ -270,10 +160,7 @@ class BleAudioControlApp:
     def choose_save_path(self):
         if self.worker:
             return
-        path = filedialog.asksaveasfilename(
-            defaultextension=".wav",
-            filetypes=[("WAV files", "*.wav"), ("All files", "*.*")],
-        )
+        path = filedialog.asksaveasfilename(defaultextension=".wav", filetypes=[("WAV files", "*.wav"), ("All files", "*.*")])
         if path:
             self.save_path = path
             self.save_label.set(path)
@@ -293,42 +180,23 @@ class BleAudioControlApp:
             state.muted = self.muted.get()
             state.adaptive_buffer_enabled = self.adaptive_buffer_enabled.get()
             state.target_queue_samples = int(SAMPLE_RATE_HZ * self.target_latency_ms.get() / 1000)
-            state.highpass_enabled = self.highpass_enabled.get()
-            state.highpass_cutoff_hz = self.highpass_cutoff.get()
-            state.lowpass_enabled = self.lowpass_enabled.get()
-            state.lowpass_cutoff_hz = self.lowpass_cutoff.get()
-            state.noise_gate_enabled = self.gate_enabled.get()
-            state.noise_gate_threshold = self.gate_threshold.get()
-            state.noise_suppression_enabled = self.noise_suppression_enabled.get()
-            state.noise_suppression_strength = self.noise_suppression_strength.get()
+            state.max_queue_samples = int(SAMPLE_RATE_HZ * self.max_latency_ms.get() / 1000)
+            state.declick_enabled = self.declick_enabled.get()
+            state.limiter_enabled = self.limiter_enabled.get()
             state.agc_enabled = self.agc_enabled.get()
             state.agc_target_rms = self.agc_target.get()
             state.agc_max_gain = self.agc_max_gain.get()
-            state.compressor_enabled = self.compressor_enabled.get()
-            state.compressor_threshold = self.compressor_threshold.get()
-            state.compressor_ratio = self.compressor_ratio.get()
-            state.compressor_makeup_gain = self.compressor_makeup.get()
-            state.declick_enabled = self.declick_enabled.get()
-            state.declick_max_step = self.declick_max_step.get()
-            state.limiter_enabled = self.limiter_enabled.get()
-            state.max_queue_samples = int(SAMPLE_RATE_HZ * self.max_latency_ms.get() / 1000)
 
     def refresh_stats(self):
         self.apply_realtime_controls()
         state = self.state
         if state is not None:
             with state.lock:
-                self.packet_label.set(f"packets={state.packets_received} lost={state.packets_lost}")
-                self.queue_label.set(
-                    f"queued={len(state.sample_queue)} concealed={state.samples_dropped} "
-                    f"underflows={state.underflows} refills={state.buffer_refills}"
-                )
+                self.packet_label.set(f"packets={state.packets_received} lost={state.packets_lost} bad={state.bad_packets}")
+                self.queue_label.set(f"queued={len(state.sample_queue)} concealed={state.samples_dropped} underflows={state.underflows} refills={state.buffer_refills}")
                 self.input_level_label.set(f"input rms={state.last_rms:.0f} peak={state.last_peak}")
-                self.output_level_label.set(
-                    f"output rms={state.output_rms:.0f} peak={state.output_peak}"
-                )
+                self.output_level_label.set(f"output rms={state.output_rms:.0f} peak={state.output_peak}")
                 self.agc_label.set(f"agc gain={state.agc_gain:.1f}x")
-                self.noise_label.set(f"noise floor={state.noise_floor:.0f}")
 
         if self.worker and not self.worker.is_alive():
             self.worker = None
@@ -353,12 +221,12 @@ class BleAudioControlApp:
             await self._run_one_session()
             if not self.auto_reconnect.get() or self.stop_requested.is_set():
                 break
-            self.root.after(0, lambda: self.status.set("Reconnecting..."))
-            await asyncio.sleep(1.0)
+            self.root.after(0, lambda: self.status.set("BLE disconnected; reconnecting..."))
+            await asyncio.sleep(1.5)
 
     async def _run_one_session(self):
         self.root.after(0, lambda: self.status.set("Scanning..."))
-        device = await find_device(timeout=5.0)
+        device = await find_device(timeout=6.0)
         if device is None:
             self.root.after(0, lambda: self.status.set("No device found"))
             return
@@ -374,13 +242,7 @@ class BleAudioControlApp:
                 self.root.after(0, lambda: self.status.set(str(status)))
             outdata[:, 0] = state.pull(frames)
 
-        stream = sd.OutputStream(
-            samplerate=SAMPLE_RATE_HZ,
-            channels=CHANNELS,
-            dtype="int16",
-            callback=audio_callback,
-            blocksize=PLAYBACK_BLOCKSIZE,
-        )
+        stream = sd.OutputStream(samplerate=SAMPLE_RATE_HZ, channels=CHANNELS, dtype="int16", callback=audio_callback, blocksize=PLAYBACK_BLOCKSIZE)
 
         try:
             disconnected = asyncio.Event()
@@ -391,13 +253,13 @@ class BleAudioControlApp:
 
             async with BleakClient(device.address, disconnected_callback=on_disconnect) as client:
                 self.connected = True
-                self.root.after(0, lambda: self.status.set("Connected, buffering..."))
+                mtu = getattr(client, "mtu_size", "unknown")
+                self.root.after(0, lambda: self.status.set(f"Connected, MTU={mtu}, buffering..."))
                 await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
 
-                while (
-                    len(state.sample_queue) < max(JITTER_BUFFER_SAMPLES, state.target_queue_samples)
-                    and not self.stop_requested.is_set()
-                ):
+                for _ in range(150):
+                    if self.stop_requested.is_set() or len(state.sample_queue) >= max(JITTER_BUFFER_SAMPLES, state.target_queue_samples):
+                        break
                     await asyncio.sleep(0.02)
 
                 if self.stop_requested.is_set():
@@ -413,18 +275,25 @@ class BleAudioControlApp:
                         await asyncio.wait_for(disconnected.wait(), timeout=0.25)
                     except asyncio.TimeoutError:
                         pass
+
                     if disconnected.is_set() or not client.is_connected:
                         self.root.after(0, lambda: self.status.set("BLE disconnected"))
                         break
+
                     packets = state.packets_received
                     if packets == last_packets:
                         stalled_ticks += 1
                     else:
                         stalled_ticks = 0
+                        if packets > 0:
+                            self.root.after(0, lambda: self.status.set("Playing"))
                     last_packets = packets
-                    if stalled_ticks >= 12:
-                        self.root.after(0, lambda: self.status.set("Stream stalled"))
-                        break
+
+                    # Important: do not disconnect/reconnect just because audio stalls.
+                    # A stall may be a transient notify gap; keeping the BLE link open is
+                    # much more stable than flapping the connection.
+                    if stalled_ticks == 20:
+                        self.root.after(0, lambda: self.status.set("Connected; waiting for audio packets"))
 
                 try:
                     await client.stop_notify(AUDIO_CHAR_UUID)
