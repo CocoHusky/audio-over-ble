@@ -91,6 +91,7 @@ class AudioStreamState:
         self.sample_queue = deque()
         self.last_seq = None
         self.samples_dropped = 0
+        self.samples_trimmed = 0
         self.packets_received = 0
         self.packets_lost = 0
         self.underflows = 0
@@ -101,17 +102,25 @@ class AudioStreamState:
         self.gain = gain
         self.muted = False
         self.adaptive_buffer_enabled = True
+        self.latency_trim_enabled = True
         self.target_queue_samples = JITTER_BUFFER_SAMPLES
         self.agc_enabled = False
-        self.agc_target_rms = 1800.0
-        self.agc_max_gain = 18.0
+        self.agc_target_rms = 2200.0
+        self.agc_max_gain = 24.0
         self.agc_gain = 1.0
+        self.highpass_enabled = True
+        self.highpass_alpha = 0.97
+        self.noise_gate_enabled = False
+        self.noise_gate_threshold = 120.0
+        self.noise_gate_attenuation = 0.08
         self.declick_enabled = True
         self.declick_max_step = 6000.0
         self.limiter_enabled = True
         self.max_queue_samples = SAMPLE_RATE_HZ
         self._last_processed_tail = np.zeros(0, dtype=np.int16)
         self._last_output_sample = 0.0
+        self._hp_prev_x = 0.0
+        self._hp_prev_y = 0.0
         self.last_rms = 0.0
         self.last_peak = 0
         self.output_rms = 0.0
@@ -169,6 +178,7 @@ class AudioStreamState:
             self.packets_received += 1
             while len(self.sample_queue) > self.max_queue_samples:
                 self.sample_queue.popleft()
+                self.samples_trimmed += 1
 
         if self.wav_writer is not None and decoded_blocks:
             self.wav_writer.writeframes(decoded_blocks[-1].astype("<i2").tobytes())
@@ -176,21 +186,45 @@ class AudioStreamState:
     def _decode_plc(self):
         return self._conceal_samples(FRAME_SAMPLES)
 
+    def _highpass(self, x: np.ndarray) -> np.ndarray:
+        y = np.empty_like(x)
+        prev_x = self._hp_prev_x
+        prev_y = self._hp_prev_y
+        alpha = self.highpass_alpha
+        for i, sample in enumerate(x):
+            out = sample - prev_x + alpha * prev_y
+            y[i] = out
+            prev_x = sample
+            prev_y = out
+        self._hp_prev_x = float(prev_x)
+        self._hp_prev_y = float(prev_y)
+        return y
+
     def _process_samples(self, samples: np.ndarray) -> np.ndarray:
         x = samples.astype(np.float64)
         if not len(x):
             return samples
+
+        if self.highpass_enabled:
+            x = self._highpass(x)
+
         block_rms = float(np.sqrt(np.mean(x ** 2)))
+
         if self.agc_enabled and block_rms > 1.0:
             target_gain = min(self.agc_target_rms / block_rms, self.agc_max_gain)
             self.agc_gain = 0.95 * self.agc_gain + 0.05 * target_gain
             x *= self.agc_gain
         else:
             self.agc_gain = 0.98 * self.agc_gain + 0.02
+
+        if self.noise_gate_enabled and block_rms < self.noise_gate_threshold:
+            x *= self.noise_gate_attenuation
+
         if self.muted:
             x *= 0.0
         else:
             x *= self.gain
+
         if self.declick_enabled:
             prev = self._last_output_sample
             for i, sample in enumerate(x):
@@ -201,10 +235,12 @@ class AudioStreamState:
                     sample = prev - self.declick_max_step
                 x[i] = sample
                 prev = sample
+
         if self.limiter_enabled:
             x = np.clip(x, -30000, 30000)
         else:
             x = np.clip(x, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
+
         self.output_rms = float(np.sqrt(np.mean(x ** 2)))
         self.output_peak = int(np.max(np.abs(x)))
         self._last_output_sample = float(x[-1])
@@ -224,6 +260,14 @@ class AudioStreamState:
     def pull(self, n):
         out = np.empty(n, dtype=np.int16)
         with self.lock:
+            if self.adaptive_buffer_enabled and self.latency_trim_enabled:
+                keep = max(self.target_queue_samples, n * 2)
+                trim_count = len(self.sample_queue) - keep
+                if trim_count > max(FRAME_SAMPLES, n):
+                    for _ in range(trim_count):
+                        self.sample_queue.popleft()
+                    self.samples_trimmed += trim_count
+
             if self.adaptive_buffer_enabled:
                 low_watermark = max(n * 2, self.target_queue_samples // 3)
                 if len(self.sample_queue) < low_watermark:
@@ -236,6 +280,7 @@ class AudioStreamState:
                         self._last_output_sample = float(out[-1])
                     return out
                 self.refilling_buffer = False
+
             avail = min(n, len(self.sample_queue))
             for i in range(avail):
                 out[i] = self.sample_queue.popleft()
@@ -244,6 +289,7 @@ class AudioStreamState:
                 out[avail:] = self._conceal_samples(n - avail)
             while len(self.sample_queue) > self.max_queue_samples:
                 self.sample_queue.popleft()
+                self.samples_trimmed += 1
             if n:
                 self._last_output_sample = float(out[-1])
         return out
@@ -305,7 +351,7 @@ async def run(address: str | None, save_path: str | None, gain: float):
                 print(
                     f"\rpackets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
                     f"bad={state.bad_packets} decode_fail={state.decode_failures} "
-                    f"queued={len(state.sample_queue)} underflows={state.underflows} "
+                    f"queued={len(state.sample_queue)} trimmed={state.samples_trimmed} underflows={state.underflows} "
                     f"rms={state.last_rms:.0f} peak={state.last_peak}",
                     end="", flush=True,
                 )
@@ -326,7 +372,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--address", default=None)
     parser.add_argument("--save", default=None, metavar="FILE.wav")
-    parser.add_argument("--gain", type=float, default=1.0)
+    parser.add_argument("--gain", type=float, default=6.0)
     args = parser.parse_args()
     try:
         asyncio.run(run(args.address, args.save, args.gain))
