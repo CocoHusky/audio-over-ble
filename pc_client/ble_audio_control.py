@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import asyncio
 import math
+import queue
 import threading
 import tkinter as tk
 from tkinter import filedialog, ttk
@@ -48,7 +49,7 @@ class ResampledPlayback:
 
         if len(self.source) < needed_len:
             needed = needed_len - len(self.source)
-            new_samples = self.state.pull(max(needed, 64)).astype(np.float32) / 32768.0
+            new_samples = self.state.pull(max(needed, 256)).astype(np.float32) / 32768.0
             self.source = np.concatenate((self.source, new_samples))
 
         positions = self.position + step * np.arange(frames, dtype=np.float32)
@@ -78,6 +79,21 @@ class BleAudioControlApp:
         self.stop_requested = threading.Event()
         self.connected = False
         self.save_path: str | None = None
+        self.ui_events: queue.SimpleQueue[tuple[str, str]] = queue.SimpleQueue()
+        self.controls_lock = threading.RLock()
+        self.controls = {
+            "gain": 1.0,
+            "muted": False,
+            "auto_reconnect": False,
+            "adaptive_buffer_enabled": True,
+            "target_latency_ms": 350.0,
+            "max_latency_ms": 1200.0,
+            "declick_enabled": True,
+            "limiter_enabled": True,
+            "agc_enabled": False,
+            "agc_target": 1800.0,
+            "agc_max_gain": 12.0,
+        }
 
         self.gain = tk.DoubleVar(value=1.0)
         self.muted = tk.BooleanVar(value=False)
@@ -102,7 +118,7 @@ class BleAudioControlApp:
 
         self._build_ui()
         self.root.protocol("WM_DELETE_WINDOW", self.close)
-        self.root.after(150, self.refresh_stats)
+        self.root.after(100, self.refresh_stats)
 
     def _build_ui(self):
         outer = ttk.Frame(self.root, padding=16)
@@ -188,6 +204,7 @@ class BleAudioControlApp:
             self.connect()
 
     def connect(self):
+        self.apply_realtime_controls()
         self.stop_requested.clear()
         self.status.set("Scanning...")
         self.connect_button.config(text="Disconnect")
@@ -214,23 +231,57 @@ class BleAudioControlApp:
         self.save_path = None
         self.save_label.set("Not recording")
 
+    def _post_ui(self, key: str, value: str):
+        self.ui_events.put((key, value))
+
+    def _drain_ui_events(self):
+        while True:
+            try:
+                key, value = self.ui_events.get_nowait()
+            except queue.Empty:
+                break
+            if key == "status":
+                self.status.set(value)
+            elif key == "device":
+                self.device.set(value)
+
+    def _control_snapshot(self):
+        with self.controls_lock:
+            return dict(self.controls)
+
     def apply_realtime_controls(self):
+        values = {
+            "gain": self.gain.get(),
+            "muted": self.muted.get(),
+            "auto_reconnect": self.auto_reconnect.get(),
+            "adaptive_buffer_enabled": self.adaptive_buffer_enabled.get(),
+            "target_latency_ms": self.target_latency_ms.get(),
+            "max_latency_ms": self.max_latency_ms.get(),
+            "declick_enabled": self.declick_enabled.get(),
+            "limiter_enabled": self.limiter_enabled.get(),
+            "agc_enabled": self.agc_enabled.get(),
+            "agc_target": self.agc_target.get(),
+            "agc_max_gain": self.agc_max_gain.get(),
+        }
+        with self.controls_lock:
+            self.controls.update(values)
         state = self.state
         if state is None:
             return
         with state.lock:
-            state.gain = self.gain.get()
-            state.muted = self.muted.get()
-            state.adaptive_buffer_enabled = self.adaptive_buffer_enabled.get()
-            state.target_queue_samples = int(SAMPLE_RATE_HZ * self.target_latency_ms.get() / 1000)
-            state.max_queue_samples = int(SAMPLE_RATE_HZ * self.max_latency_ms.get() / 1000)
-            state.declick_enabled = self.declick_enabled.get()
-            state.limiter_enabled = self.limiter_enabled.get()
-            state.agc_enabled = self.agc_enabled.get()
-            state.agc_target_rms = self.agc_target.get()
-            state.agc_max_gain = self.agc_max_gain.get()
+            state.gain = values["gain"]
+            state.muted = values["muted"]
+            state.adaptive_buffer_enabled = values["adaptive_buffer_enabled"]
+            state.target_queue_samples = int(SAMPLE_RATE_HZ * values["target_latency_ms"] / 1000)
+            state.max_queue_samples = int(SAMPLE_RATE_HZ * values["max_latency_ms"] / 1000)
+            state.declick_enabled = values["declick_enabled"]
+            state.limiter_enabled = values["limiter_enabled"]
+            state.agc_enabled = values["agc_enabled"]
+            state.agc_target_rms = values["agc_target"]
+            state.agc_max_gain = values["agc_max_gain"]
 
     def refresh_stats(self):
+        self._drain_ui_events()
         self.apply_realtime_controls()
         state = self.state
         if state is not None:
@@ -248,13 +299,13 @@ class BleAudioControlApp:
             if self.status.get() not in {"Disconnected", "No device found"}:
                 self.status.set("Disconnected")
 
-        self.root.after(150, self.refresh_stats)
+        self.root.after(100, self.refresh_stats)
 
     def _run_worker(self):
         try:
             asyncio.run(self._run_loop())
         except Exception as exc:
-            self.root.after(0, lambda: self.status.set(f"Error: {exc}"))
+            self._post_ui("status", f"Error: {exc}")
         finally:
             self.connected = False
             self.state = None
@@ -262,22 +313,24 @@ class BleAudioControlApp:
     async def _run_loop(self):
         while not self.stop_requested.is_set():
             await self._run_one_session()
-            if not self.auto_reconnect.get() or self.stop_requested.is_set():
+            controls = self._control_snapshot()
+            if not controls["auto_reconnect"] or self.stop_requested.is_set():
                 break
-            self.root.after(0, lambda: self.status.set("BLE disconnected; reconnecting..."))
+            self._post_ui("status", "BLE disconnected; reconnecting...")
             await asyncio.sleep(1.5)
 
     async def _run_one_session(self):
-        self.root.after(0, lambda: self.status.set("Scanning..."))
+        self._post_ui("status", "Scanning...")
         device = await find_device(timeout=6.0)
         if device is None:
-            self.root.after(0, lambda: self.status.set("No device found"))
+            self._post_ui("status", "No device found")
             return
 
-        self.root.after(0, lambda: self.device.set(f"Device: {device.address}"))
-        state = AudioStreamState(save_path=self.save_path, gain=self.gain.get())
+        self._post_ui("device", f"Device: {device.address}")
+        controls = self._control_snapshot()
+        state = AudioStreamState(save_path=self.save_path, gain=controls["gain"])
         self.state = state
-        self.apply_realtime_controls()
+        self.apply_state_controls_from_snapshot(state, controls)
 
         output_rate = default_output_rate()
         player = ResampledPlayback(state, output_rate)
@@ -285,7 +338,7 @@ class BleAudioControlApp:
         def audio_callback(outdata, frames, time_info, status):
             del time_info
             if status:
-                self.root.after(0, lambda: self.status.set(str(status)))
+                self._post_ui("status", str(status))
             outdata[:, 0] = player.pull(frames)
 
         stream = None
@@ -299,7 +352,7 @@ class BleAudioControlApp:
             async with BleakClient(device.address, disconnected_callback=on_disconnect) as client:
                 self.connected = True
                 mtu = getattr(client, "mtu_size", "unknown")
-                self.root.after(0, lambda: self.status.set(f"Connected, MTU={mtu}, buffering..."))
+                self._post_ui("status", f"Connected, MTU={mtu}, buffering...")
                 await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
 
                 for _ in range(150):
@@ -319,7 +372,7 @@ class BleAudioControlApp:
                     latency="high",
                 )
                 stream.start()
-                self.root.after(0, lambda: self.status.set(f"Playing to Mac output at {output_rate} Hz"))
+                self._post_ui("status", f"Playing to Mac output at {output_rate} Hz")
 
                 last_packets = -1
                 stalled_ticks = 0
@@ -330,7 +383,7 @@ class BleAudioControlApp:
                         pass
 
                     if disconnected.is_set() or not client.is_connected:
-                        self.root.after(0, lambda: self.status.set("BLE disconnected"))
+                        self._post_ui("status", "BLE disconnected")
                         break
 
                     packets = state.packets_received
@@ -339,11 +392,11 @@ class BleAudioControlApp:
                     else:
                         stalled_ticks = 0
                         if packets > 0:
-                            self.root.after(0, lambda: self.status.set(f"Playing to Mac output at {output_rate} Hz"))
+                            self._post_ui("status", f"Playing to Mac output at {output_rate} Hz")
                     last_packets = packets
 
                     if stalled_ticks == 20:
-                        self.root.after(0, lambda: self.status.set("Connected; waiting for audio packets"))
+                        self._post_ui("status", "Connected; waiting for audio packets")
 
                 try:
                     await client.stop_notify(AUDIO_CHAR_UUID)
@@ -359,8 +412,22 @@ class BleAudioControlApp:
                 except Exception:
                     pass
             state.close()
-            if self.stop_requested.is_set() or not self.auto_reconnect.get():
-                self.root.after(0, lambda: self.status.set("Disconnected"))
+            controls = self._control_snapshot()
+            if self.stop_requested.is_set() or not controls["auto_reconnect"]:
+                self._post_ui("status", "Disconnected")
+
+    def apply_state_controls_from_snapshot(self, state: AudioStreamState, values: dict):
+        with state.lock:
+            state.gain = values["gain"]
+            state.muted = values["muted"]
+            state.adaptive_buffer_enabled = values["adaptive_buffer_enabled"]
+            state.target_queue_samples = int(SAMPLE_RATE_HZ * values["target_latency_ms"] / 1000)
+            state.max_queue_samples = int(SAMPLE_RATE_HZ * values["max_latency_ms"] / 1000)
+            state.declick_enabled = values["declick_enabled"]
+            state.limiter_enabled = values["limiter_enabled"]
+            state.agc_enabled = values["agc_enabled"]
+            state.agc_target_rms = values["agc_target"]
+            state.agc_max_gain = values["agc_max_gain"]
 
     def close(self):
         self.disconnect()
