@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""audio-over-ble LC3 PC client."""
+"""audio-over-ble ADPCM PC client."""
 
 from __future__ import annotations
 
@@ -15,24 +15,79 @@ import sounddevice as sd
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
 
-from lc3_codec import FRAME_BYTES, FRAME_SAMPLES, LC3Decoder
-
 SERVICE_UUID = "04a77077-8d9a-4cd2-bf83-f7adafa02251"
 AUDIO_CHAR_UUID = "30fafbf6-9ec3-41ae-86b9-60cbf31328bb"
 DEVICE_NAME = "CocoHusky-AudioStream"
 SAMPLE_RATE_HZ = 16000
 CHANNELS = 1
 BYTES_PER_SAMPLE = 2
+FRAME_SAMPLES = 160
+FRAME_BYTES = 84
 APP_HEADER_SIZE = 6
 JITTER_BUFFER_MS = 350
 JITTER_BUFFER_SAMPLES = int(SAMPLE_RATE_HZ * JITTER_BUFFER_MS / 1000)
 PLAYBACK_BLOCKSIZE = 512
 
+_IMA_STEP_TABLE = np.array(
+    [
+        7, 8, 9, 10, 11, 12, 13, 14, 16, 17,
+        19, 21, 23, 25, 28, 31, 34, 37, 41, 45,
+        50, 55, 60, 66, 73, 80, 88, 97, 107, 118,
+        130, 143, 157, 173, 190, 209, 230, 253, 279, 307,
+        337, 371, 408, 449, 494, 544, 598, 658, 724, 796,
+        876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
+        2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358,
+        5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
+        15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767,
+    ],
+    dtype=np.int32,
+)
+_IMA_INDEX_TABLE = np.array(
+    [-1, -1, -1, -1, 2, 4, 6, 8, -1, -1, -1, -1, 2, 4, 6, 8],
+    dtype=np.int32,
+)
+
+
+def decode_adpcm_frame(payload: bytes) -> np.ndarray:
+    if len(payload) != FRAME_BYTES:
+        raise ValueError(f"expected {FRAME_BYTES} ADPCM bytes, got {len(payload)}")
+
+    predictor = int.from_bytes(payload[0:2], byteorder="little", signed=True)
+    index = int(payload[2])
+    index = max(0, min(88, index))
+
+    out = np.empty(FRAME_SAMPLES, dtype=np.int16)
+    out[0] = predictor
+
+    for i in range(FRAME_SAMPLES - 1):
+        packed = payload[4 + (i >> 1)]
+        nibble = (packed >> 4) & 0x0F if (i & 1) else packed & 0x0F
+
+        step = int(_IMA_STEP_TABLE[index])
+        diffq = step >> 3
+        if nibble & 4:
+            diffq += step
+        if nibble & 2:
+            diffq += step >> 1
+        if nibble & 1:
+            diffq += step >> 2
+
+        if nibble & 8:
+            predictor -= diffq
+        else:
+            predictor += diffq
+        predictor = max(-32768, min(32767, predictor))
+
+        index += int(_IMA_INDEX_TABLE[nibble])
+        index = max(0, min(88, index))
+        out[i + 1] = predictor
+
+    return out
+
 
 class AudioStreamState:
     def __init__(self, save_path=None, gain=1.0):
         self.lock = threading.RLock()
-        self.decoder = LC3Decoder()
         self.sample_queue = deque()
         self.last_seq = None
         self.samples_dropped = 0
@@ -75,10 +130,10 @@ class AudioStreamState:
 
         seq = data[0] | (data[1] << 8)
         decoded_samples = data[2] | (data[3] << 8)
-        lc3_bytes = data[4] | (data[5] << 8)
+        payload_bytes = data[4] | (data[5] << 8)
         payload = bytes(data[APP_HEADER_SIZE:])
 
-        if decoded_samples != FRAME_SAMPLES or lc3_bytes != len(payload) or lc3_bytes != FRAME_BYTES:
+        if decoded_samples != FRAME_SAMPLES or payload_bytes != len(payload) or payload_bytes != FRAME_BYTES:
             self.bad_packets += 1
             return
 
@@ -95,7 +150,7 @@ class AudioStreamState:
             self.last_seq = seq
 
             try:
-                decoded_blocks.append(self.decoder.decode(payload))
+                decoded_blocks.append(decode_adpcm_frame(payload))
             except Exception:
                 self.decode_failures += 1
                 decoded_blocks.append(self._decode_plc())
@@ -119,10 +174,7 @@ class AudioStreamState:
             self.wav_writer.writeframes(decoded_blocks[-1].astype("<i2").tobytes())
 
     def _decode_plc(self):
-        try:
-            return self.decoder.decode(None)
-        except Exception:
-            return self._conceal_samples(FRAME_SAMPLES)
+        return self._conceal_samples(FRAME_SAMPLES)
 
     def _process_samples(self, samples: np.ndarray) -> np.ndarray:
         x = samples.astype(np.float64)
@@ -237,18 +289,21 @@ async def run(address: str | None, save_path: str | None, gain: float):
     async with BleakClient(address) as client:
         print(f"Connected to {address}; reported MTU={getattr(client, 'mtu_size', 'unknown')}")
         await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
-        print("Subscribed to LC3 audio characteristic. Buffering...")
+        print("Subscribed to ADPCM audio characteristic. Buffering...")
         for _ in range(150):
             if len(state.sample_queue) >= JITTER_BUFFER_SAMPLES:
                 break
             await asyncio.sleep(0.02)
         stream.start()
         print("Playback started. Ctrl+C to stop.")
+        last_packets = 0
         try:
             while True:
                 await asyncio.sleep(1.0)
+                packet_rate = state.packets_received - last_packets
+                last_packets = state.packets_received
                 print(
-                    f"\rpackets={state.packets_received} lost={state.packets_lost} "
+                    f"\rpackets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
                     f"bad={state.bad_packets} decode_fail={state.decode_failures} "
                     f"queued={len(state.sample_queue)} underflows={state.underflows} "
                     f"rms={state.last_rms:.0f} peak={state.last_peak}",
