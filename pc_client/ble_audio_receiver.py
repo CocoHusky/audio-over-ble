@@ -15,7 +15,7 @@ import sounddevice as sd
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
 
-CODE_VERSION = "ULAW_UI_V1_2026-07-07"
+CODE_VERSION = "ULAW_UI_V2_GAIN_2026-07-07"
 CODEC_NAME = "u-law 16kHz mono"
 SERVICE_UUID = "04a77077-8d9a-4cd2-bf83-f7adafa02251"
 AUDIO_CHAR_UUID = "30fafbf6-9ec3-41ae-86b9-60cbf31328bb"
@@ -77,8 +77,8 @@ class AudioStreamState:
         self.latency_trim_enabled = True
         self.target_queue_samples = JITTER_BUFFER_SAMPLES
         self.agc_enabled = False
-        self.agc_target_rms = 1600.0
-        self.agc_max_gain = 8.0
+        self.agc_target_rms = 3000.0
+        self.agc_max_gain = 24.0
         self.agc_gain = 1.0
         self.highpass_enabled = True
         self.highpass_alpha = 0.985
@@ -365,7 +365,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--address", default=None)
     parser.add_argument("--save", default=None, metavar="FILE.wav")
-    parser.add_argument("--gain", type=float, default=3.0)
+    parser.add_argument("--gain", type=float, default=8.0)
     args = parser.parse_args()
     try:
         asyncio.run(run(args.address, args.save, args.gain))
