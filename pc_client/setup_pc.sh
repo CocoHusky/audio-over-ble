@@ -15,11 +15,11 @@ source venv/bin/activate
 
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
-python -m py_compile ble_audio_receiver.py ble_audio_control.py
+python -m py_compile ble_audio_receiver.py ble_audio_control.py play_ble_audio.py
 
 echo ""
 echo "PC client environment is ready."
-echo "Run the control UI with:"
+echo "Run the simple player with:"
 echo "  cd $SCRIPT_DIR"
 echo "  source venv/bin/activate"
-echo "  python ble_audio_control.py"
+echo "  python play_ble_audio.py"
