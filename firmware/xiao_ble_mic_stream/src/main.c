@@ -3,8 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <lc3.h>
-
 #include <zephyr/audio/dmic.h>
 #include <zephyr/bluetooth/bluetooth.h>
 #include <zephyr/bluetooth/conn.h>
@@ -26,14 +24,15 @@ LOG_MODULE_REGISTER(xiao_ble_mic, LOG_LEVEL_INF);
 #define CHANNELS 1
 #define SAMPLE_BIT_WIDTH 16
 #define BYTES_PER_SAMPLE 2
-#define LC3_FRAME_US 10000
-#define LC3_BITRATE_BPS 32000
-#define LC3_FRAME_SAMPLES 160
-#define LC3_FRAME_BYTES 40
+#define FRAME_SAMPLES 160
+#define FRAME_US 10000
 #define APP_HEADER_SIZE 6
-#define LC3_PACKET_SIZE (APP_HEADER_SIZE + LC3_FRAME_BYTES)
+#define ADPCM_STATE_BYTES 4
+#define ADPCM_NIBBLE_BYTES 80
+#define ADPCM_FRAME_BYTES (ADPCM_STATE_BYTES + ADPCM_NIBBLE_BYTES)
+#define AUDIO_PACKET_SIZE (APP_HEADER_SIZE + ADPCM_FRAME_BYTES)
 #define READ_TIMEOUT_MS 100
-#define AUDIO_BLOCK_SIZE (LC3_FRAME_SAMPLES * BYTES_PER_SAMPLE)
+#define AUDIO_BLOCK_SIZE (FRAME_SAMPLES * BYTES_PER_SAMPLE)
 #define AUDIO_BLOCK_COUNT 12
 #define PDM_CONTROLLER_INDEX 0
 #define PDM_POWER_NODE DT_ALIAS(pdm_power)
@@ -50,12 +49,27 @@ static struct bt_conn *current_conn;
 static volatile bool notify_enabled;
 static volatile bool stream_requested;
 static uint16_t tx_seq;
-static uint8_t tx_packet[LC3_PACKET_SIZE];
+static uint8_t tx_packet[AUDIO_PACKET_SIZE];
 static uint32_t notify_drop_count;
 static uint32_t notify_ok_count;
-static uint32_t encode_fail_count;
-static lc3_encoder_mem_16k_t lc3_encoder_mem;
-static lc3_encoder_t lc3_encoder;
+static uint8_t adpcm_index_state;
+
+static const int ima_step_table[89] = {
+	7, 8, 9, 10, 11, 12, 13, 14, 16, 17,
+	19, 21, 23, 25, 28, 31, 34, 37, 41, 45,
+	50, 55, 60, 66, 73, 80, 88, 97, 107, 118,
+	130, 143, 157, 173, 190, 209, 230, 253, 279, 307,
+	337, 371, 408, 449, 494, 544, 598, 658, 724, 796,
+	876, 963, 1060, 1166, 1282, 1411, 1552, 1707, 1878, 2066,
+	2272, 2499, 2749, 3024, 3327, 3660, 4026, 4428, 4871, 5358,
+	5894, 6484, 7132, 7845, 8630, 9493, 10442, 11487, 12635, 13899,
+	15289, 16818, 18500, 20350, 22385, 24623, 27086, 29794, 32767,
+};
+
+static const int ima_index_table[16] = {
+	-1, -1, -1, -1, 2, 4, 6, 8,
+	-1, -1, -1, -1, 2, 4, 6, 8,
+};
 
 static void advertise(void);
 static void advertise_work_handler(struct k_work *work);
@@ -68,17 +82,100 @@ static struct bt_uuid_128 audio_char_uuid =
 	BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x30fafbf6, 0x9ec3, 0x41ae, 0x86b9,
 					    0x60cbf31328bb));
 
+static int clamp_int(int value, int min_value, int max_value)
+{
+	if (value < min_value) {
+		return min_value;
+	}
+	if (value > max_value) {
+		return max_value;
+	}
+	return value;
+}
+
+static uint8_t ima_encode_sample(int sample, int *predictor, uint8_t *index)
+{
+	int step = ima_step_table[*index];
+	int diff = sample - *predictor;
+	uint8_t nibble = 0;
+	int vpdiff = step >> 3;
+
+	if (diff < 0) {
+		nibble = 8;
+		diff = -diff;
+	}
+
+	if (diff >= step) {
+		nibble |= 4;
+		diff -= step;
+		vpdiff += step;
+	}
+	if (diff >= (step >> 1)) {
+		nibble |= 2;
+		diff -= step >> 1;
+		vpdiff += step >> 1;
+	}
+	if (diff >= (step >> 2)) {
+		nibble |= 1;
+		vpdiff += step >> 2;
+	}
+
+	if (nibble & 8) {
+		*predictor -= vpdiff;
+	} else {
+		*predictor += vpdiff;
+	}
+	*predictor = clamp_int(*predictor, INT16_MIN, INT16_MAX);
+	*index = (uint8_t)clamp_int((int)*index + ima_index_table[nibble], 0, 88);
+
+	return nibble & 0x0f;
+}
+
+static int encode_adpcm_frame(const int16_t *samples, size_t sample_count,
+			      uint8_t *payload, size_t payload_size)
+{
+	int predictor;
+	uint8_t index;
+
+	if (sample_count < FRAME_SAMPLES || payload_size < ADPCM_FRAME_BYTES) {
+		return -EINVAL;
+	}
+
+	predictor = samples[0];
+	index = adpcm_index_state;
+
+	sys_put_le16((uint16_t)predictor, payload);
+	payload[2] = index;
+	payload[3] = 0;
+	memset(&payload[ADPCM_STATE_BYTES], 0, ADPCM_NIBBLE_BYTES);
+
+	for (size_t i = 1; i < FRAME_SAMPLES; i++) {
+		uint8_t nibble = ima_encode_sample(samples[i], &predictor, &index);
+		size_t encoded_i = i - 1;
+		size_t byte_i = ADPCM_STATE_BYTES + (encoded_i >> 1);
+
+		if (encoded_i & 1U) {
+			payload[byte_i] |= (uint8_t)(nibble << 4);
+		} else {
+			payload[byte_i] = nibble;
+		}
+	}
+
+	adpcm_index_state = index;
+	return 0;
+}
+
 static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value)
 {
 	ARG_UNUSED(attr);
 	notify_enabled = (value == BT_GATT_CCC_NOTIFY);
 	stream_requested = notify_enabled;
-	LOG_INF("LC3 notifications %s", notify_enabled ? "enabled" : "disabled");
+	LOG_INF("ADPCM notifications %s", notify_enabled ? "enabled" : "disabled");
 	if (notify_enabled) {
 		tx_seq = 0;
 		notify_drop_count = 0;
 		notify_ok_count = 0;
-		encode_fail_count = 0;
+		adpcm_index_state = 0;
 	}
 }
 
@@ -128,7 +225,7 @@ static void connected(struct bt_conn *conn, uint8_t err)
 	tx_seq = 0;
 	notify_drop_count = 0;
 	notify_ok_count = 0;
-	encode_fail_count = 0;
+	adpcm_index_state = 0;
 	k_work_cancel_delayable(&advertise_work);
 	LOG_INF("Connected: %s", addr);
 	request_link_updates(conn);
@@ -171,38 +268,21 @@ static void advertise_work_handler(struct k_work *work)
 	advertise();
 }
 
-static int configure_lc3(void)
-{
-	int expected_bytes = lc3_frame_bytes(LC3_FRAME_US, LC3_BITRATE_BPS);
-	if (expected_bytes != LC3_FRAME_BYTES) {
-		LOG_WRN("LC3 frame bytes expected %d, using %d", expected_bytes, LC3_FRAME_BYTES);
-	}
-	lc3_encoder = lc3_setup_encoder(LC3_FRAME_US, SAMPLE_RATE_HZ, 0, &lc3_encoder_mem);
-	if (!lc3_encoder) {
-		LOG_ERR("LC3 encoder setup failed");
-		return -EINVAL;
-	}
-	return 0;
-}
-
-static int send_lc3_frame(const int16_t *samples, size_t sample_count)
+static int send_adpcm_frame(const int16_t *samples, size_t sample_count)
 {
 	int err;
-	if (!current_conn || !notify_enabled || sample_count < LC3_FRAME_SAMPLES) {
+	if (!current_conn || !notify_enabled || sample_count < FRAME_SAMPLES) {
 		return 0;
 	}
-	err = lc3_encode(lc3_encoder, LC3_PCM_FORMAT_S16, samples, 1,
-			 LC3_FRAME_BYTES, &tx_packet[APP_HEADER_SIZE]);
+
+	err = encode_adpcm_frame(samples, sample_count, &tx_packet[APP_HEADER_SIZE], ADPCM_FRAME_BYTES);
 	if (err) {
-		encode_fail_count++;
-		if ((encode_fail_count % 25U) == 1U) {
-			LOG_WRN("LC3 encode failures=%u err=%d", encode_fail_count, err);
-		}
 		return err;
 	}
+
 	sys_put_le16(tx_seq, tx_packet);
-	sys_put_le16(LC3_FRAME_SAMPLES, &tx_packet[2]);
-	sys_put_le16(LC3_FRAME_BYTES, &tx_packet[4]);
+	sys_put_le16(FRAME_SAMPLES, &tx_packet[2]);
+	sys_put_le16(ADPCM_FRAME_BYTES, &tx_packet[4]);
 	err = bt_gatt_notify(current_conn, &audio_svc.attrs[2], tx_packet, sizeof(tx_packet));
 	if (err) {
 		notify_drop_count++;
@@ -211,7 +291,7 @@ static int send_lc3_frame(const int16_t *samples, size_t sample_count)
 			stream_requested = false;
 		}
 		if ((notify_drop_count % 25U) == 1U) {
-			LOG_WRN("Dropped LC3 packets=%u ok=%u latest_seq=%u err=%d",
+			LOG_WRN("Dropped ADPCM packets=%u ok=%u latest_seq=%u err=%d",
 				notify_drop_count, notify_ok_count, tx_seq, err);
 		}
 		return err;
@@ -262,15 +342,13 @@ int main(void)
 {
 	int err;
 	bool stream_active = false;
-	LOG_INF("Starting LC3 BLE microphone stream: %d Hz, %d bytes/frame", SAMPLE_RATE_HZ, LC3_FRAME_BYTES);
+	LOG_INF("Starting ADPCM BLE microphone stream: %d Hz, %d bytes/frame", SAMPLE_RATE_HZ, ADPCM_FRAME_BYTES);
 	err = enable_pdm_power();
 	if (err) { return 0; }
 	if (!device_is_ready(dmic_dev)) {
 		LOG_ERR("%s is not ready", dmic_dev->name);
 		return 0;
 	}
-	err = configure_lc3();
-	if (err) { return 0; }
 	err = configure_pdm();
 	if (err) {
 		LOG_ERR("PDM configure failed: %d", err);
@@ -313,7 +391,7 @@ int main(void)
 			continue;
 		}
 		if (notify_enabled) {
-			(void)send_lc3_frame((const int16_t *)buffer, size / BYTES_PER_SAMPLE);
+			(void)send_adpcm_frame((const int16_t *)buffer, size / BYTES_PER_SAMPLE);
 		}
 		k_mem_slab_free(&audio_slab, buffer);
 	}
