@@ -1,15 +1,13 @@
 /*
- * XIAO nRF52840 Sense Opus microphone-over-BLE firmware.
+ * XIAO nRF52840 Sense raw PCM microphone-over-BLE firmware.
  *
- * Captures the onboard PDM microphone as 16 kHz mono signed 16-bit PCM,
- * encodes 20 ms frames with libopus, and
+ * Captures the onboard PDM microphone as 16 kHz mono signed 16-bit PCM and
  * streams it through a custom BLE notify characteristic.
  *
  * Packet format:
  *   [uint16 little-endian seq]
- *   [uint16 little-endian decoded sample count]
- *   [uint16 little-endian Opus byte count]
- *   [Opus payload...]
+ *   [uint16 little-endian sample count]
+ *   [signed 16-bit little-endian PCM payload...]
  */
 
 #include <errno.h>
@@ -29,8 +27,6 @@
 #include <zephyr/logging/log.h>
 #include <zephyr/sys/byteorder.h>
 
-#include <opus.h>
-
 LOG_MODULE_REGISTER(xiao_ble_mic, LOG_LEVEL_INF);
 
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
@@ -41,12 +37,14 @@ LOG_MODULE_REGISTER(xiao_ble_mic, LOG_LEVEL_INF);
 #define SAMPLE_BIT_WIDTH 16
 #define BYTES_PER_SAMPLE (SAMPLE_BIT_WIDTH / 8)
 
-#define OPUS_FRAME_MS 20
-#define OPUS_FRAME_SAMPLES (SAMPLE_RATE_HZ / 1000 * OPUS_FRAME_MS)
-#define OPUS_BITRATE_BPS 32000
-#define OPUS_MAX_PAYLOAD_BYTES 180
-#define AUDIO_HEADER_SIZE 6
-#define AUDIO_PACKET_SIZE (AUDIO_HEADER_SIZE + OPUS_MAX_PAYLOAD_BYTES)
+/*
+ * With ATT MTU 247, the largest notification payload is normally 244 bytes.
+ * 4-byte app header + 120 samples * 2 bytes/sample = 244 bytes.
+ */
+#define RAW_HEADER_SIZE 4
+#define RAW_FRAME_SAMPLES 120
+#define RAW_FRAME_BYTES (RAW_FRAME_SAMPLES * BYTES_PER_SAMPLE)
+#define RAW_PACKET_SIZE (RAW_HEADER_SIZE + RAW_FRAME_BYTES)
 
 #define READ_TIMEOUT_MS 100
 #define AUDIO_BLOCK_MS 10
@@ -68,11 +66,8 @@ static struct bt_conn *current_conn;
 static volatile bool notify_enabled;
 static volatile bool stream_requested;
 static uint16_t tx_seq;
-static uint8_t tx_packet[AUDIO_PACKET_SIZE];
+static uint8_t tx_packet[RAW_PACKET_SIZE];
 static uint32_t notify_drop_count;
-static OpusEncoder *opus_encoder;
-static int16_t opus_pcm[OPUS_FRAME_SAMPLES];
-static size_t opus_fill_samples;
 
 static void advertise(void);
 static void advertise_work_handler(struct k_work *work);
@@ -85,6 +80,7 @@ static struct bt_uuid_128 audio_service_uuid =
 static struct bt_uuid_128 audio_char_uuid =
 	BT_UUID_INIT_128(BT_UUID_128_ENCODE(0x30fafbf6, 0x9ec3, 0x41ae, 0x86b9,
 					    0x60cbf31328bb));
+
 static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value)
 {
 	ARG_UNUSED(attr);
@@ -95,11 +91,7 @@ static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value)
 
 	if (notify_enabled) {
 		tx_seq = 0;
-		opus_fill_samples = 0;
 		notify_drop_count = 0;
-		if (opus_encoder) {
-			opus_encoder_ctl(opus_encoder, OPUS_RESET_STATE);
-		}
 	}
 }
 
@@ -127,7 +119,7 @@ static void request_link_updates(struct bt_conn *conn)
 {
 	int err;
 
-	err = bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(12, 24, 0, 500));
+	err = bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(6, 12, 0, 400));
 	if (err) {
 		LOG_WRN("Connection parameter update failed: %d", err);
 	}
@@ -163,7 +155,6 @@ static void connected(struct bt_conn *conn, uint8_t err)
 	notify_enabled = false;
 	stream_requested = false;
 	tx_seq = 0;
-	opus_fill_samples = 0;
 	notify_drop_count = 0;
 	k_work_cancel_delayable(&advertise_work);
 
@@ -180,7 +171,6 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
 
 	notify_enabled = false;
 	stream_requested = false;
-	opus_fill_samples = 0;
 
 	if (current_conn) {
 		bt_conn_unref(current_conn);
@@ -220,74 +210,52 @@ static void advertise_work_handler(struct k_work *work)
 	advertise();
 }
 
-static int configure_opus(void)
+static void send_pcm_frame(const int16_t *samples, uint16_t sample_count)
 {
 	int err;
-
-	opus_encoder = opus_encoder_create(SAMPLE_RATE_HZ, CHANNELS, OPUS_APPLICATION_AUDIO, &err);
-	if (err != OPUS_OK || opus_encoder == NULL) {
-		LOG_ERR("Opus encoder create failed: %d", err);
-		return -ENOMEM;
-	}
-
-	opus_encoder_ctl(opus_encoder, OPUS_SET_BITRATE(OPUS_BITRATE_BPS));
-	opus_encoder_ctl(opus_encoder, OPUS_SET_COMPLEXITY(3));
-	opus_encoder_ctl(opus_encoder, OPUS_SET_VBR(0));
-	opus_encoder_ctl(opus_encoder, OPUS_SET_SIGNAL(OPUS_SIGNAL_VOICE));
-	opus_encoder_ctl(opus_encoder, OPUS_SET_INBAND_FEC(0));
-	opus_encoder_ctl(opus_encoder, OPUS_SET_DTX(0));
-
-	LOG_INF("Opus configured: %d Hz mono, %d ms, %d bps",
-		SAMPLE_RATE_HZ, OPUS_FRAME_MS, OPUS_BITRATE_BPS);
-	return 0;
-}
-
-static void send_opus_frame(void)
-{
-	int err;
-	int encoded_len;
+	size_t payload_bytes;
 	size_t packet_len;
 
-	sys_put_le16(tx_seq, tx_packet);
-	sys_put_le16(OPUS_FRAME_SAMPLES, &tx_packet[2]);
-
-	encoded_len = opus_encode(opus_encoder, opus_pcm, OPUS_FRAME_SAMPLES,
-				  &tx_packet[AUDIO_HEADER_SIZE], OPUS_MAX_PAYLOAD_BYTES);
-	if (encoded_len <= 0) {
-		LOG_WRN("Opus encode failed: %d", encoded_len);
-		opus_fill_samples = 0;
+	if (!current_conn || !notify_enabled || sample_count == 0U) {
 		return;
 	}
 
-	sys_put_le16((uint16_t)encoded_len, &tx_packet[4]);
-	packet_len = AUDIO_HEADER_SIZE + encoded_len;
-
-	if (current_conn && notify_enabled) {
-		err = bt_gatt_notify(current_conn, &audio_svc.attrs[2], tx_packet, packet_len);
-		if (err) {
-			notify_drop_count++;
-			if (err == -ENOTCONN) {
-				notify_enabled = false;
-				stream_requested = false;
-			}
-			if ((notify_drop_count % 100U) == 1U) {
-				LOG_WRN("Dropped audio packets=%u latest_seq=%u err=%d",
-					notify_drop_count, tx_seq, err);
-			}
-		}
+	if (sample_count > RAW_FRAME_SAMPLES) {
+		sample_count = RAW_FRAME_SAMPLES;
 	}
 
-	tx_seq++;
-	opus_fill_samples = 0;
+	payload_bytes = sample_count * BYTES_PER_SAMPLE;
+	sys_put_le16(tx_seq, tx_packet);
+	sys_put_le16(sample_count, &tx_packet[2]);
+	memcpy(&tx_packet[RAW_HEADER_SIZE], samples, payload_bytes);
+	packet_len = RAW_HEADER_SIZE + payload_bytes;
+
+	err = bt_gatt_notify(current_conn, &audio_svc.attrs[2], tx_packet, packet_len);
+	if (err) {
+		notify_drop_count++;
+		if (err == -ENOTCONN) {
+			notify_enabled = false;
+			stream_requested = false;
+		}
+		if ((notify_drop_count % 100U) == 1U) {
+			LOG_WRN("Dropped PCM packets=%u latest_seq=%u err=%d",
+				notify_drop_count, tx_seq, err);
+		}
+	} else {
+		tx_seq++;
+	}
 }
 
-static void queue_sample(int16_t sample)
+static void send_pcm_block(const int16_t *samples, size_t sample_count)
 {
-	opus_pcm[opus_fill_samples] = sample;
-	opus_fill_samples++;
+	size_t offset = 0;
 
-	if (opus_fill_samples == OPUS_FRAME_SAMPLES) {
-		send_opus_frame();
+	while (offset < sample_count && notify_enabled) {
+		size_t remaining = sample_count - offset;
+		uint16_t frame_samples = (uint16_t)MIN(remaining, (size_t)RAW_FRAME_SAMPLES);
+
+		send_pcm_frame(&samples[offset], frame_samples);
+		offset += frame_samples;
 	}
 }
 
@@ -345,7 +313,7 @@ int main(void)
 	int err;
 	bool stream_active = false;
 
-	LOG_INF("Starting raw BLE microphone stream");
+	LOG_INF("Starting raw 16-bit PCM BLE microphone stream");
 
 	err = enable_pdm_power();
 	if (err) {
@@ -360,11 +328,6 @@ int main(void)
 	err = configure_pdm();
 	if (err) {
 		LOG_ERR("PDM configure failed: %d", err);
-		return 0;
-	}
-
-	err = configure_opus();
-	if (err) {
 		return 0;
 	}
 
@@ -387,7 +350,6 @@ int main(void)
 					LOG_WRN("PDM stop failed: %d", err);
 				}
 				stream_active = false;
-				opus_fill_samples = 0;
 				LOG_INF("PDM stopped");
 			}
 			k_sleep(K_MSEC(20));
@@ -417,9 +379,7 @@ int main(void)
 			const int16_t *samples = buffer;
 			size_t sample_count = size / BYTES_PER_SAMPLE;
 
-			for (size_t i = 0; i < sample_count; i++) {
-				queue_sample(samples[i]);
-			}
+			send_pcm_block(samples, sample_count);
 		}
 
 		k_mem_slab_free(&audio_slab, buffer);
