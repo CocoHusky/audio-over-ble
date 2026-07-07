@@ -38,11 +38,12 @@ LOG_MODULE_REGISTER(xiao_ble_mic, LOG_LEVEL_INF);
 #define BYTES_PER_SAMPLE (SAMPLE_BIT_WIDTH / 8)
 
 /*
- * With ATT MTU 247, the largest notification payload is normally 244 bytes.
- * 4-byte app header + 120 samples * 2 bytes/sample = 244 bytes.
+ * 88 samples keeps each notification at 180 bytes:
+ * 4-byte app header + 88 samples * 2 bytes/sample = 180 bytes.
+ * This stays below the common 182-byte CoreBluetooth payload limit on macOS.
  */
 #define RAW_HEADER_SIZE 4
-#define RAW_FRAME_SAMPLES 120
+#define RAW_FRAME_SAMPLES 88
 #define RAW_FRAME_BYTES (RAW_FRAME_SAMPLES * BYTES_PER_SAMPLE)
 #define RAW_PACKET_SIZE (RAW_HEADER_SIZE + RAW_FRAME_BYTES)
 
