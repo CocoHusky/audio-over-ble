@@ -1,21 +1,9 @@
 #!/usr/bin/env python3
 """
-audio-over-ble — raw PCM PC client
-----------------------------------
-Connects to the XIAO nRF52840 Sense over BLE, subscribes to the audio
-characteristic, receives raw 16-bit PCM frames, and plays live through your
-default output device.
+audio-over-ble — stable raw PCM PC client.
 
-Packet format expected (must match firmware):
+Packet format expected from firmware:
     [uint16 LE seq][uint16 LE sample_count][signed 16-bit LE PCM payload...]
-
-Usage:
-    python ble_audio_receiver.py                 # auto-scan for the device
-    python ble_audio_receiver.py --address XX:XX:XX:XX:XX:XX
-    python ble_audio_receiver.py --save out.wav   # also record to a WAV file
-
-Install deps first:
-    pip install -r requirements.txt
 """
 
 from __future__ import annotations
@@ -36,15 +24,15 @@ SERVICE_UUID = "04a77077-8d9a-4cd2-bf83-f7adafa02251"
 AUDIO_CHAR_UUID = "30fafbf6-9ec3-41ae-86b9-60cbf31328bb"
 DEVICE_NAME = "CocoHusky-AudioStream"
 
-SAMPLE_RATE_HZ = 16000
+# Stability-first baseline. This must match firmware SAMPLE_RATE_HZ.
+SAMPLE_RATE_HZ = 8000
 CHANNELS = 1
 BYTES_PER_SAMPLE = 2
 RAW_HEADER_SIZE = 4
 
-# Bigger = more resistant to BLE jitter, but adds latency.
-JITTER_BUFFER_MS = 250
+JITTER_BUFFER_MS = 350
 JITTER_BUFFER_SAMPLES = int(SAMPLE_RATE_HZ * JITTER_BUFFER_MS / 1000)
-PLAYBACK_BLOCKSIZE = 512
+PLAYBACK_BLOCKSIZE = 256
 
 
 class AudioStreamState:
@@ -67,7 +55,7 @@ class AudioStreamState:
         self.highpass_enabled = False
         self.highpass_cutoff_hz = 80.0
         self.lowpass_enabled = False
-        self.lowpass_cutoff_hz = 7000.0
+        self.lowpass_cutoff_hz = 3600.0
         self.noise_gate_enabled = False
         self.noise_gate_threshold = 80.0
         self.noise_gate_attenuation = 0.15
@@ -86,9 +74,6 @@ class AudioStreamState:
         self.declick_max_step = 6000.0
         self.limiter_enabled = True
         self.max_queue_samples = SAMPLE_RATE_HZ
-        self._hp_prev_x = 0.0
-        self._hp_prev_y = 0.0
-        self._lp_prev_y = 0.0
         self._last_processed_tail = np.zeros(0, dtype=np.int16)
         self._last_output_sample = 0.0
         self.last_rms = 0.0
@@ -122,21 +107,22 @@ class AudioStreamState:
             return
 
         if len(sample_array):
-            self.last_rms = float(np.sqrt(np.mean(sample_array.astype(np.float64) ** 2)))
-            self.last_peak = int(np.max(np.abs(sample_array.astype(np.int32))))
+            sample_i32 = sample_array.astype(np.int32)
+            self.last_rms = float(np.sqrt(np.mean(sample_i32.astype(np.float64) ** 2)))
+            self.last_peak = int(np.max(np.abs(sample_i32)))
 
         with self.lock:
             if self.last_seq is not None:
                 expected = (self.last_seq + 1) & 0xFFFF
                 if seq != expected:
                     gap = (seq - expected) & 0xFFFF
-                    if gap < 1000:  # sanity bound, ignore wraparound weirdness
+                    if 0 < gap < 100:
                         self.packets_lost += gap
-                        for _ in range(gap):
+                        conceal_count = min(gap, 5)
+                        for _ in range(conceal_count):
                             concealment = self._conceal_samples(frame_samples)
-                            processed_concealment = self._process_samples(concealment)
-                            self.sample_queue.extend(processed_concealment.tolist())
-                            self.samples_dropped += len(processed_concealment)
+                            self.sample_queue.extend(concealment.tolist())
+                            self.samples_dropped += len(concealment)
             self.last_seq = seq
             self.packets_received += 1
 
@@ -151,37 +137,12 @@ class AudioStreamState:
 
     def _process_samples(self, samples: np.ndarray) -> np.ndarray:
         x = samples.astype(np.float64)
+        if not len(x):
+            return samples
 
-        if self.highpass_enabled and self.highpass_cutoff_hz > 0:
-            rc = 1.0 / (2.0 * np.pi * self.highpass_cutoff_hz)
-            dt = 1.0 / SAMPLE_RATE_HZ
-            alpha = rc / (rc + dt)
-            y = np.empty_like(x)
-            prev_x = self._hp_prev_x
-            prev_y = self._hp_prev_y
-            for i, sample in enumerate(x):
-                prev_y = alpha * (prev_y + sample - prev_x)
-                prev_x = sample
-                y[i] = prev_y
-            self._hp_prev_x = float(prev_x)
-            self._hp_prev_y = float(prev_y)
-            x = y
+        block_rms = float(np.sqrt(np.mean(x ** 2)))
 
-        if self.lowpass_enabled and 0 < self.lowpass_cutoff_hz < SAMPLE_RATE_HZ / 2:
-            rc = 1.0 / (2.0 * np.pi * self.lowpass_cutoff_hz)
-            dt = 1.0 / SAMPLE_RATE_HZ
-            alpha = dt / (rc + dt)
-            y = np.empty_like(x)
-            prev_y = self._lp_prev_y
-            for i, sample in enumerate(x):
-                prev_y = prev_y + alpha * (sample - prev_y)
-                y[i] = prev_y
-            self._lp_prev_y = float(prev_y)
-            x = y
-
-        block_rms = float(np.sqrt(np.mean(x ** 2))) if len(x) else 0.0
-
-        if self.noise_suppression_enabled and len(x):
+        if self.noise_suppression_enabled:
             if block_rms < max(self.noise_gate_threshold * 2.0, self.noise_floor * 4.0):
                 self.noise_floor = 0.98 * self.noise_floor + 0.02 * block_rms
             suppression_point = max(self.noise_floor * 2.5, 1.0)
@@ -199,14 +160,13 @@ class AudioStreamState:
         else:
             self.agc_gain = 0.98 * self.agc_gain + 0.02
 
-        if self.compressor_enabled and len(x):
+        if self.compressor_enabled:
             abs_x = np.abs(x)
             over = abs_x > self.compressor_threshold
             compressed = np.copy(abs_x)
-            compressed[over] = (
-                self.compressor_threshold
-                + (abs_x[over] - self.compressor_threshold) / max(self.compressor_ratio, 1.0)
-            )
+            compressed[over] = self.compressor_threshold + (
+                abs_x[over] - self.compressor_threshold
+            ) / max(self.compressor_ratio, 1.0)
             x = np.sign(x) * compressed * self.compressor_makeup_gain
 
         if self.muted:
@@ -214,7 +174,7 @@ class AudioStreamState:
         else:
             x *= self.gain
 
-        if self.declick_enabled and len(x):
+        if self.declick_enabled:
             prev = self._last_output_sample
             for i, sample in enumerate(x):
                 delta = sample - prev
@@ -230,10 +190,9 @@ class AudioStreamState:
         else:
             x = np.clip(x, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
 
-        self.output_rms = float(np.sqrt(np.mean(x ** 2))) if len(x) else 0.0
-        self.output_peak = int(np.max(np.abs(x))) if len(x) else 0
-        if len(x):
-            self._last_output_sample = float(x[-1])
+        self.output_rms = float(np.sqrt(np.mean(x ** 2)))
+        self.output_peak = int(np.max(np.abs(x)))
+        self._last_output_sample = float(x[-1])
         return x.astype(np.int16)
 
     def _conceal_samples(self, count):
@@ -248,35 +207,29 @@ class AudioStreamState:
         return (base * fade).astype(np.int16)
 
     def pull(self, n):
-        """Pop up to n samples for playback; fade-conceal if starved."""
         out = np.empty(n, dtype=np.int16)
         with self.lock:
             if self.adaptive_buffer_enabled:
                 low_watermark = max(n * 2, self.target_queue_samples // 3)
                 if len(self.sample_queue) < low_watermark:
+                    if not self.refilling_buffer:
+                        self.buffer_refills += 1
                     self.refilling_buffer = True
-                    self.buffer_refills += 1
-                if self.refilling_buffer:
-                    if len(self.sample_queue) >= self.target_queue_samples:
-                        self.refilling_buffer = False
-                    else:
-                        out[:] = self._conceal_samples(n)
-                        if n:
-                            self._last_output_sample = float(out[-1])
-                        return out
+                if self.refilling_buffer and len(self.sample_queue) < self.target_queue_samples:
+                    out[:] = self._conceal_samples(n)
+                    if n:
+                        self._last_output_sample = float(out[-1])
+                    return out
+                self.refilling_buffer = False
 
             avail = min(n, len(self.sample_queue))
             for i in range(avail):
                 out[i] = self.sample_queue.popleft()
             if avail < n:
                 self.underflows += 1
-                missing = n - avail
-                tail = self._conceal_samples(missing)
-                out[avail:] = tail
-            if self.adaptive_buffer_enabled:
-                overflow = len(self.sample_queue) - self.max_queue_samples
-                for _ in range(max(0, overflow)):
-                    self.sample_queue.popleft()
+                out[avail:] = self._conceal_samples(n - avail)
+            while len(self.sample_queue) > self.max_queue_samples:
+                self.sample_queue.popleft()
             if n:
                 self._last_output_sample = float(out[-1])
         return out
@@ -289,7 +242,7 @@ class AudioStreamState:
 async def find_device(timeout=8.0):
     print(f"Scanning for '{DEVICE_NAME}' ({timeout:.0f}s timeout)...")
     device = await BleakScanner.find_device_by_filter(
-        lambda d, adv: d.name == DEVICE_NAME or (adv.local_name == DEVICE_NAME),
+        lambda d, adv: d.name == DEVICE_NAME or adv.local_name == DEVICE_NAME,
         timeout=timeout,
     )
     return device
@@ -299,8 +252,7 @@ async def run(address: str | None, save_path: str | None, gain: float):
     if address is None:
         device = await find_device()
         if device is None:
-            print(f"Could not find a device named '{DEVICE_NAME}'. "
-                  f"Is the XIAO powered on and advertising?", file=sys.stderr)
+            print(f"Could not find a device named '{DEVICE_NAME}'. Is the XIAO powered on and advertising?", file=sys.stderr)
             sys.exit(1)
         address = device.address
         print(f"Found device at {address}")
@@ -308,10 +260,10 @@ async def run(address: str | None, save_path: str | None, gain: float):
     state = AudioStreamState(save_path=save_path, gain=gain)
 
     def audio_callback(outdata, frames, time_info, status):
+        del time_info
         if status:
             print(status, file=sys.stderr)
-        chunk = state.pull(frames)
-        outdata[:, 0] = chunk
+        outdata[:, 0] = state.pull(frames)
 
     stream = sd.OutputStream(
         samplerate=SAMPLE_RATE_HZ,
@@ -322,11 +274,14 @@ async def run(address: str | None, save_path: str | None, gain: float):
     )
 
     async with BleakClient(address) as client:
-        print(f"Connected to {address}")
+        mtu = getattr(client, "mtu_size", "unknown")
+        print(f"Connected to {address}; reported MTU={mtu}")
         await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
         print("Subscribed to raw PCM audio characteristic. Buffering...")
 
-        while len(state.sample_queue) < JITTER_BUFFER_SAMPLES:
+        for _ in range(150):
+            if len(state.sample_queue) >= JITTER_BUFFER_SAMPLES:
+                break
             await asyncio.sleep(0.02)
 
         stream.start()
@@ -340,7 +295,7 @@ async def run(address: str | None, save_path: str | None, gain: float):
                     f"lost={state.packets_lost} "
                     f"bad={state.bad_packets} "
                     f"queued_samples={len(state.sample_queue)} "
-                    f"dropped_samples_concealed={state.samples_dropped} "
+                    f"concealed={state.samples_dropped} "
                     f"underflows={state.underflows} "
                     f"refills={state.buffer_refills} "
                     f"rms={state.last_rms:.0f} "
