@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""audio-over-ble u-law PC client."""
+"""audio-over-ble exact u-law PC client."""
 
 from __future__ import annotations
 
@@ -15,15 +15,18 @@ import sounddevice as sd
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
 
+CODE_VERSION = "ULAW_UI_V1_2026-07-07"
+CODEC_NAME = "u-law 16kHz mono"
 SERVICE_UUID = "04a77077-8d9a-4cd2-bf83-f7adafa02251"
 AUDIO_CHAR_UUID = "30fafbf6-9ec3-41ae-86b9-60cbf31328bb"
-DEVICE_NAME = "CocoHusky-AudioStream"
+DEVICE_NAME = "CocoHusky-uLaw-v1"
 SAMPLE_RATE_HZ = 16000
 CHANNELS = 1
 BYTES_PER_SAMPLE = 2
 FRAME_SAMPLES = 160
 FRAME_BYTES = FRAME_SAMPLES
 APP_HEADER_SIZE = 6
+PACKET_BYTES = APP_HEADER_SIZE + FRAME_BYTES
 JITTER_BUFFER_MS = 180
 JITTER_BUFFER_SAMPLES = int(SAMPLE_RATE_HZ * JITTER_BUFFER_MS / 1000)
 PLAYBACK_BLOCKSIZE = 256
@@ -95,6 +98,7 @@ class AudioStreamState:
         self.last_peak = 0
         self.output_rms = 0.0
         self.output_peak = 0
+        self.last_bad_shape = "none"
         self.wav_writer = None
         if save_path:
             self.wav_writer = wave.open(save_path, "wb")
@@ -103,8 +107,11 @@ class AudioStreamState:
             self.wav_writer.setframerate(SAMPLE_RATE_HZ)
 
     def handle_notification(self, _handle, data: bytearray):
-        if len(data) < APP_HEADER_SIZE:
-            self.bad_packets += 1
+        data_len = len(data)
+        if data_len < APP_HEADER_SIZE:
+            with self.lock:
+                self.bad_packets += 1
+                self.last_bad_shape = f"len={data_len}, expected={PACKET_BYTES}"
             return
 
         seq = data[0] | (data[1] << 8)
@@ -113,7 +120,12 @@ class AudioStreamState:
         payload = bytes(data[APP_HEADER_SIZE:])
 
         if decoded_samples != FRAME_SAMPLES or payload_bytes != len(payload) or payload_bytes != FRAME_BYTES:
-            self.bad_packets += 1
+            with self.lock:
+                self.bad_packets += 1
+                self.last_bad_shape = (
+                    f"len={data_len}, samples={decoded_samples}, payload={payload_bytes}, "
+                    f"expected len={PACKET_BYTES}, samples={FRAME_SAMPLES}, payload={FRAME_BYTES}"
+                )
             return
 
         decoded_blocks = []
@@ -274,7 +286,7 @@ class AudioStreamState:
 
 
 async def find_device(timeout=8.0):
-    print(f"Scanning for '{DEVICE_NAME}' ({timeout:.0f}s timeout)...")
+    print(f"Scanning for exact '{DEVICE_NAME}' ({CODE_VERSION}, {timeout:.0f}s timeout)...")
     return await BleakScanner.find_device_by_filter(
         lambda d, adv: d.name == DEVICE_NAME or adv.local_name == DEVICE_NAME,
         timeout=timeout,
@@ -282,13 +294,14 @@ async def find_device(timeout=8.0):
 
 
 async def run(address: str | None, save_path: str | None, gain: float):
+    print(f"PC code version: {CODE_VERSION} | codec={CODEC_NAME} | expected BLE name={DEVICE_NAME}")
     if address is None:
         device = await find_device()
         if device is None:
-            print(f"Could not find '{DEVICE_NAME}'.", file=sys.stderr)
+            print(f"Could not find exact firmware '{DEVICE_NAME}'. Reflash the board.", file=sys.stderr)
             sys.exit(1)
         address = device.address
-        print(f"Found device at {address}")
+        print(f"Found {DEVICE_NAME} at {address}")
 
     state = AudioStreamState(save_path=save_path, gain=gain)
 
@@ -310,7 +323,7 @@ async def run(address: str | None, save_path: str | None, gain: float):
     async with BleakClient(address) as client:
         print(f"Connected to {address}; reported MTU={getattr(client, 'mtu_size', 'unknown')}")
         await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
-        print("Subscribed to u-law audio characteristic. Buffering...")
+        print("Subscribed to exact u-law audio characteristic. Buffering...")
         for _ in range(100):
             if len(state.sample_queue) >= JITTER_BUFFER_SAMPLES:
                 break
@@ -318,19 +331,23 @@ async def run(address: str | None, save_path: str | None, gain: float):
         stream.start()
         print("Playback started. Ctrl+C to stop.")
         last_packets = 0
+        last_line_len = 0
         try:
             while True:
                 await asyncio.sleep(1.0)
                 packet_rate = state.packets_received - last_packets
                 last_packets = state.packets_received
                 queued_ms = 1000.0 * len(state.sample_queue) / SAMPLE_RATE_HZ
-                print(
-                    f"\rpackets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
+                line = (
+                    f"packets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
                     f"bad={state.bad_packets} decode_fail={state.decode_failures} "
                     f"queued={len(state.sample_queue)}({queued_ms:.0f}ms) trimmed={state.samples_trimmed} "
-                    f"underflows={state.underflows} rms={state.last_rms:.0f} peak={state.last_peak}",
-                    end="", flush=True,
+                    f"underflows={state.underflows} rms={state.last_rms:.0f} peak={state.last_peak} "
+                    f"bad_shape={state.last_bad_shape}"
                 )
+                clear = " " * max(0, last_line_len - len(line))
+                print(f"\r{line}{clear}", end="", flush=True)
+                last_line_len = len(line)
         except asyncio.CancelledError:
             pass
         finally:
