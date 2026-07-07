@@ -1,12 +1,13 @@
 # audio-over-ble
 
-Stream audio from a Seeed XIAO nRF52840 Sense's onboard PDM microphone to a
-PC over BLE, and play it live.
+Stream raw microphone audio from a Seeed XIAO nRF52840 Sense's onboard PDM
+microphone to a PC over BLE, and play it live.
 
-The current firmware uses **Opus**: the XIAO captures 16 kHz mono PCM,
-encodes 20 ms frames with Xiph libopus, and sends one encoded frame per BLE
-notification. The PC client decodes those Opus packets with the same libopus
-implementation before playback.
+This is now a **raw 16-bit PCM baseline**. The XIAO captures 16 kHz mono PCM and
+sends it directly over a custom BLE notify characteristic. There is no Opus
+firmware build, no host-side Opus build, and no audio compression in this path.
+That makes it easier to debug true microphone quality before adding compression
+back later.
 
 ## Hardware
 
@@ -40,9 +41,6 @@ west flash
 Open the serial console at 115200 baud. You should see the device advertising
 as `CocoHusky-AudioStream`.
 
-The firmware vendors the official Xiph libopus source under
-`third_party/opus-1.6.1` and links it as a fixed-point static library.
-
 ## PC client setup (`pc_client/`)
 
 ```bash
@@ -50,15 +48,10 @@ cd pc_client
 python3 -m venv venv
 source venv/bin/activate      # or venv\Scripts\activate on Windows
 pip install -r requirements.txt
-./build_opus_host.sh
 python ble_audio_receiver.py
 ```
 
-The `build_opus_host.sh` step builds a local `libopus.dylib` from the same
-vendored Xiph source. The Python client loads that library directly through
-`ctypes`.
-
-The client will scan for the device, connect, buffer decoded audio, then start
+The client scans for the device, connects, buffers raw PCM audio, then starts
 live playback. You'll see a running counter of packets received/lost.
 
 Optional: record what you hear to a WAV file at the same time:
@@ -75,34 +68,48 @@ python ble_audio_receiver.py --address AA:BB:CC:DD:EE:FF
 
 ## How it's structured
 
-- **Firmware** captures PDM samples at 16 kHz mono with Zephyr's DMIC driver,
-  encodes 320-sample / 20 ms frames with libopus at 32 kbps CBR, and sends
-  one Opus frame per BLE notification.
+- **Firmware** captures PDM samples at 16 kHz mono with Zephyr's DMIC driver and
+  sends raw 16-bit little-endian PCM frames over BLE notifications.
 - **Packet format** is:
-  `[uint16 seq][uint16 decoded_sample_count][uint16 opus_byte_count][opus payload]`.
-  The sequence number lets the PC side detect missing frames and ask Opus PLC
-  to conceal them.
-- **PC client** uses `bleak` to subscribe to notifications, decodes Opus frames
-  through libopus, queues decoded PCM, and `sounddevice` pulls from that queue
-  in a real-time audio callback.
+  `[uint16 seq][uint16 sample_count][int16 PCM samples...]`.
+  The sequence number lets the PC side detect missing BLE packets and conceal
+  short gaps during playback.
+- **PC client** uses `bleak` to subscribe to notifications, converts the PCM
+  payload directly into NumPy `int16` samples, queues them, and `sounddevice`
+  pulls from that queue in a real-time audio callback.
 
 ## Bandwidth math
 
-Opus is currently configured for 32 kbps CBR. With the 6-byte application
-header, that is roughly 43 kbps before BLE overhead, much lower than 256 kbps
-raw PCM. If you see `lost=` climbing in the PC client's status line:
+Raw 16 kHz mono 16-bit PCM is about 256 kbps before BLE overhead:
+
+```text
+16,000 samples/s * 16 bits/sample = 256,000 bits/s
+```
+
+The firmware uses 120-sample packets so the full notification is 244 bytes:
+
+```text
+4-byte app header + 120 samples * 2 bytes/sample = 244 bytes
+```
+
+This intentionally pushes BLE harder than the Opus path. If you see `lost=` or
+`bad=` climbing in the PC client's status line:
 
 - Move the board closer to the PC / reduce RF interference first
-- Confirm your PC's BLE adapter/driver actually supports the 2M PHY —
-  older adapters can bottleneck here regardless of firmware settings
+- Confirm your PC's BLE adapter/driver supports the 2M PHY and data-length
+  extension
+- Lower the sample rate or add compression after confirming the raw mic signal
+  sounds clean
 
 This is still a bring-up path, not Bluetooth LE Audio. A production BLE audio
 product would use LC3 over isochronous channels. This repo intentionally keeps
-the custom GATT service so the XIAO can stream directly to the Python client
-on a Mac.
+the custom GATT service so the XIAO can stream directly to the Python client on
+a Mac.
 
 ## Next steps
 
-- Tune Opus bitrate and complexity after confirming the encoder can keep up on
-  the nRF52840 without starving the PDM read loop.
-- Move to LC3/ISO if you want to follow the standard BLE audio architecture.
+- Use this raw PCM path to judge microphone quality, gain, clipping, noise, and
+  packet loss without codec artifacts.
+- After the raw path sounds correct, add compression back with a smaller embedded
+  codec path or LC3/ISO if you want to follow the standard BLE audio
+  architecture.
