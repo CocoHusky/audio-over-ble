@@ -24,16 +24,16 @@ if(NOT LC3_DIR OR NOT EXISTS "${LC3_DIR}/include/lc3.h")
   message(FATAL_ERROR "lc3.h not found in the NCS tree. Run: find /opt/nordic/ncs -path '*/include/lc3.h' -print")
 endif()
 
-message(STATUS "Using LC3_DIR=${LC3_DIR}")
-
-target_sources(app PRIVATE src/main.c)
-target_include_directories(app PRIVATE "${LC3_DIR}/include")
-
-if(EXISTS "${LC3_DIR}/CMakeLists.txt")
-  add_subdirectory("${LC3_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/liblc3")
-  if(TARGET lc3)
-    target_link_libraries(app PRIVATE lc3)
-  elseif(TARGET liblc3)
-    target_link_libraries(app PRIVATE liblc3)
-  endif()
+file(GLOB LC3_SOURCES CONFIGURE_DEPENDS "${LC3_DIR}/src/*.c")
+if(NOT LC3_SOURCES)
+  message(FATAL_ERROR "LC3 sources not found at ${LC3_DIR}/src/*.c")
 endif()
+
+message(STATUS "Using LC3_DIR=${LC3_DIR}")
+message(STATUS "Compiling LC3 sources: ${LC3_SOURCES}")
+
+target_sources(app PRIVATE src/main.c ${LC3_SOURCES})
+target_include_directories(app PRIVATE
+  "${LC3_DIR}/include"
+  "${LC3_DIR}/src"
+)
