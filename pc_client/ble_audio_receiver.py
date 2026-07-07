@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
-"""
-audio-over-ble — stable raw PCM PC client.
-
-Packet format expected from firmware:
-    [uint16 LE seq][uint16 LE sample_count][signed 16-bit LE PCM payload...]
-"""
+"""audio-over-ble LC3 PC client."""
 
 from __future__ import annotations
 
@@ -20,24 +15,24 @@ import sounddevice as sd
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
 
+from lc3_codec import FRAME_BYTES, FRAME_SAMPLES, LC3Decoder
+
 SERVICE_UUID = "04a77077-8d9a-4cd2-bf83-f7adafa02251"
 AUDIO_CHAR_UUID = "30fafbf6-9ec3-41ae-86b9-60cbf31328bb"
 DEVICE_NAME = "CocoHusky-AudioStream"
-
-# Stability-first baseline. This must match firmware SAMPLE_RATE_HZ.
-SAMPLE_RATE_HZ = 8000
+SAMPLE_RATE_HZ = 16000
 CHANNELS = 1
 BYTES_PER_SAMPLE = 2
-RAW_HEADER_SIZE = 4
-
+APP_HEADER_SIZE = 6
 JITTER_BUFFER_MS = 350
 JITTER_BUFFER_SAMPLES = int(SAMPLE_RATE_HZ * JITTER_BUFFER_MS / 1000)
-PLAYBACK_BLOCKSIZE = 256
+PLAYBACK_BLOCKSIZE = 512
 
 
 class AudioStreamState:
     def __init__(self, save_path=None, gain=1.0):
         self.lock = threading.RLock()
+        self.decoder = LC3Decoder()
         self.sample_queue = deque()
         self.last_seq = None
         self.samples_dropped = 0
@@ -46,30 +41,16 @@ class AudioStreamState:
         self.underflows = 0
         self.buffer_refills = 0
         self.bad_packets = 0
-        self.started_playback = False
+        self.decode_failures = 0
         self.refilling_buffer = False
         self.gain = gain
         self.muted = False
         self.adaptive_buffer_enabled = True
         self.target_queue_samples = JITTER_BUFFER_SAMPLES
-        self.highpass_enabled = False
-        self.highpass_cutoff_hz = 80.0
-        self.lowpass_enabled = False
-        self.lowpass_cutoff_hz = 3600.0
-        self.noise_gate_enabled = False
-        self.noise_gate_threshold = 80.0
-        self.noise_gate_attenuation = 0.15
-        self.noise_suppression_enabled = False
-        self.noise_floor = 40.0
-        self.noise_suppression_strength = 0.55
         self.agc_enabled = False
         self.agc_target_rms = 1800.0
         self.agc_max_gain = 18.0
         self.agc_gain = 1.0
-        self.compressor_enabled = False
-        self.compressor_threshold = 9000.0
-        self.compressor_ratio = 3.0
-        self.compressor_makeup_gain = 1.0
         self.declick_enabled = True
         self.declick_max_step = 6000.0
         self.limiter_enabled = True
@@ -88,29 +69,20 @@ class AudioStreamState:
             self.wav_writer.setframerate(SAMPLE_RATE_HZ)
 
     def handle_notification(self, _handle, data: bytearray):
-        if len(data) < RAW_HEADER_SIZE:
+        if len(data) < APP_HEADER_SIZE:
             self.bad_packets += 1
             return
 
         seq = data[0] | (data[1] << 8)
-        frame_samples = data[2] | (data[3] << 8)
-        payload = bytes(data[RAW_HEADER_SIZE:])
-        expected_bytes = frame_samples * BYTES_PER_SAMPLE
+        decoded_samples = data[2] | (data[3] << 8)
+        lc3_bytes = data[4] | (data[5] << 8)
+        payload = bytes(data[APP_HEADER_SIZE:])
 
-        if frame_samples <= 0 or len(payload) != expected_bytes:
+        if decoded_samples != FRAME_SAMPLES or lc3_bytes != len(payload) or lc3_bytes != FRAME_BYTES:
             self.bad_packets += 1
             return
 
-        sample_array = np.frombuffer(payload, dtype="<i2").copy()
-        if len(sample_array) != frame_samples:
-            self.bad_packets += 1
-            return
-
-        if len(sample_array):
-            sample_i32 = sample_array.astype(np.int32)
-            self.last_rms = float(np.sqrt(np.mean(sample_i32.astype(np.float64) ** 2)))
-            self.last_peak = int(np.max(np.abs(sample_i32)))
-
+        decoded_blocks = []
         with self.lock:
             if self.last_seq is not None:
                 expected = (self.last_seq + 1) & 0xFFFF
@@ -118,62 +90,55 @@ class AudioStreamState:
                     gap = (seq - expected) & 0xFFFF
                     if 0 < gap < 100:
                         self.packets_lost += gap
-                        conceal_count = min(gap, 5)
-                        for _ in range(conceal_count):
-                            concealment = self._conceal_samples(frame_samples)
-                            self.sample_queue.extend(concealment.tolist())
-                            self.samples_dropped += len(concealment)
+                        for _ in range(min(gap, 5)):
+                            decoded_blocks.append(self._decode_plc())
             self.last_seq = seq
-            self.packets_received += 1
 
-            processed = self._process_samples(sample_array)
-            self.sample_queue.extend(processed.tolist())
-            self._last_processed_tail = processed[-min(len(processed), frame_samples):].copy()
+            try:
+                decoded_blocks.append(self.decoder.decode(payload))
+            except Exception:
+                self.decode_failures += 1
+                decoded_blocks.append(self._decode_plc())
+
+            for block in decoded_blocks:
+                if len(block):
+                    block_i32 = block.astype(np.int32)
+                    self.last_rms = float(np.sqrt(np.mean(block_i32.astype(np.float64) ** 2)))
+                    self.last_peak = int(np.max(np.abs(block_i32)))
+                processed = self._process_samples(block)
+                self.sample_queue.extend(processed.tolist())
+                self._last_processed_tail = processed[-min(len(processed), FRAME_SAMPLES):].copy()
+                if block is not decoded_blocks[-1]:
+                    self.samples_dropped += len(processed)
+
+            self.packets_received += 1
             while len(self.sample_queue) > self.max_queue_samples:
                 self.sample_queue.popleft()
 
-        if self.wav_writer is not None:
-            self.wav_writer.writeframes(sample_array.astype("<i2").tobytes())
+        if self.wav_writer is not None and decoded_blocks:
+            self.wav_writer.writeframes(decoded_blocks[-1].astype("<i2").tobytes())
+
+    def _decode_plc(self):
+        try:
+            return self.decoder.decode(None)
+        except Exception:
+            return self._conceal_samples(FRAME_SAMPLES)
 
     def _process_samples(self, samples: np.ndarray) -> np.ndarray:
         x = samples.astype(np.float64)
         if not len(x):
             return samples
-
         block_rms = float(np.sqrt(np.mean(x ** 2)))
-
-        if self.noise_suppression_enabled:
-            if block_rms < max(self.noise_gate_threshold * 2.0, self.noise_floor * 4.0):
-                self.noise_floor = 0.98 * self.noise_floor + 0.02 * block_rms
-            suppression_point = max(self.noise_floor * 2.5, 1.0)
-            if block_rms < suppression_point:
-                reduction = self.noise_suppression_strength * (1.0 - block_rms / suppression_point)
-                x *= max(0.0, 1.0 - reduction)
-
-        if self.noise_gate_enabled and block_rms < self.noise_gate_threshold:
-            x *= self.noise_gate_attenuation
-
         if self.agc_enabled and block_rms > 1.0:
             target_gain = min(self.agc_target_rms / block_rms, self.agc_max_gain)
             self.agc_gain = 0.95 * self.agc_gain + 0.05 * target_gain
             x *= self.agc_gain
         else:
             self.agc_gain = 0.98 * self.agc_gain + 0.02
-
-        if self.compressor_enabled:
-            abs_x = np.abs(x)
-            over = abs_x > self.compressor_threshold
-            compressed = np.copy(abs_x)
-            compressed[over] = self.compressor_threshold + (
-                abs_x[over] - self.compressor_threshold
-            ) / max(self.compressor_ratio, 1.0)
-            x = np.sign(x) * compressed * self.compressor_makeup_gain
-
         if self.muted:
             x *= 0.0
         else:
             x *= self.gain
-
         if self.declick_enabled:
             prev = self._last_output_sample
             for i, sample in enumerate(x):
@@ -184,12 +149,10 @@ class AudioStreamState:
                     sample = prev - self.declick_max_step
                 x[i] = sample
                 prev = sample
-
         if self.limiter_enabled:
             x = np.clip(x, -30000, 30000)
         else:
             x = np.clip(x, np.iinfo(np.int16).min, np.iinfo(np.int16).max)
-
         self.output_rms = float(np.sqrt(np.mean(x ** 2)))
         self.output_peak = int(np.max(np.abs(x)))
         self._last_output_sample = float(x[-1])
@@ -221,7 +184,6 @@ class AudioStreamState:
                         self._last_output_sample = float(out[-1])
                     return out
                 self.refilling_buffer = False
-
             avail = min(n, len(self.sample_queue))
             for i in range(avail):
                 out[i] = self.sample_queue.popleft()
@@ -241,18 +203,17 @@ class AudioStreamState:
 
 async def find_device(timeout=8.0):
     print(f"Scanning for '{DEVICE_NAME}' ({timeout:.0f}s timeout)...")
-    device = await BleakScanner.find_device_by_filter(
+    return await BleakScanner.find_device_by_filter(
         lambda d, adv: d.name == DEVICE_NAME or adv.local_name == DEVICE_NAME,
         timeout=timeout,
     )
-    return device
 
 
 async def run(address: str | None, save_path: str | None, gain: float):
     if address is None:
         device = await find_device()
         if device is None:
-            print(f"Could not find a device named '{DEVICE_NAME}'. Is the XIAO powered on and advertising?", file=sys.stderr)
+            print(f"Could not find '{DEVICE_NAME}'.", file=sys.stderr)
             sys.exit(1)
         address = device.address
         print(f"Found device at {address}")
@@ -274,34 +235,23 @@ async def run(address: str | None, save_path: str | None, gain: float):
     )
 
     async with BleakClient(address) as client:
-        mtu = getattr(client, "mtu_size", "unknown")
-        print(f"Connected to {address}; reported MTU={mtu}")
+        print(f"Connected to {address}; reported MTU={getattr(client, 'mtu_size', 'unknown')}")
         await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
-        print("Subscribed to raw PCM audio characteristic. Buffering...")
-
+        print("Subscribed to LC3 audio characteristic. Buffering...")
         for _ in range(150):
             if len(state.sample_queue) >= JITTER_BUFFER_SAMPLES:
                 break
             await asyncio.sleep(0.02)
-
         stream.start()
         print("Playback started. Ctrl+C to stop.")
-
         try:
             while True:
                 await asyncio.sleep(1.0)
                 print(
-                    f"\rpackets={state.packets_received} "
-                    f"lost={state.packets_lost} "
-                    f"bad={state.bad_packets} "
-                    f"queued_samples={len(state.sample_queue)} "
-                    f"concealed={state.samples_dropped} "
-                    f"underflows={state.underflows} "
-                    f"refills={state.buffer_refills} "
-                    f"rms={state.last_rms:.0f} "
-                    f"peak={state.last_peak} "
-                    f"out_rms={state.output_rms:.0f} "
-                    f"out_peak={state.output_peak}",
+                    f"\rpackets={state.packets_received} lost={state.packets_lost} "
+                    f"bad={state.bad_packets} decode_fail={state.decode_failures} "
+                    f"queued={len(state.sample_queue)} underflows={state.underflows} "
+                    f"rms={state.last_rms:.0f} peak={state.last_peak}",
                     end="", flush=True,
                 )
         except asyncio.CancelledError:
@@ -319,11 +269,10 @@ async def run(address: str | None, save_path: str | None, gain: float):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--address", default=None, help="BLE MAC/UUID address (skip auto-scan)")
-    parser.add_argument("--save", default=None, metavar="FILE.wav", help="Also save incoming audio to a WAV file")
-    parser.add_argument("--gain", type=float, default=1.0, help="Playback-only digital gain multiplier")
+    parser.add_argument("--address", default=None)
+    parser.add_argument("--save", default=None, metavar="FILE.wav")
+    parser.add_argument("--gain", type=float, default=1.0)
     args = parser.parse_args()
-
     try:
         asyncio.run(run(args.address, args.save, args.gain))
     except KeyboardInterrupt:
