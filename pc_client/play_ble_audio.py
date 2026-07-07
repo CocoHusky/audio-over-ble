@@ -11,7 +11,6 @@ import sys
 import numpy as np
 import sounddevice as sd
 from bleak import BleakClient
-from bleak.exc import BleakError
 
 from ble_audio_receiver import (
     AUDIO_CHAR_UUID,
@@ -77,6 +76,11 @@ async def main_async(args: argparse.Namespace) -> int:
 
     state = AudioStreamState(save_path=args.save, gain=args.gain)
     state.adaptive_buffer_enabled = True
+    state.latency_trim_enabled = not args.no_latency_trim
+    state.highpass_enabled = not args.no_highpass
+    state.agc_enabled = args.agc
+    state.noise_gate_enabled = args.noise_gate
+    state.noise_gate_threshold = args.noise_threshold
     state.target_queue_samples = int(SAMPLE_RATE_HZ * args.buffer_ms / 1000)
     state.max_queue_samples = int(SAMPLE_RATE_HZ * 2.0)
 
@@ -120,7 +124,8 @@ async def main_async(args: argparse.Namespace) -> int:
                 print(
                     f"\rpackets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
                     f"bad={state.bad_packets} decode_fail={state.decode_failures} "
-                    f"queued={len(state.sample_queue)} rms={state.last_rms:.0f} peak={state.last_peak}",
+                    f"queued={len(state.sample_queue)} trimmed={state.samples_trimmed} underflows={state.underflows} "
+                    f"rms={state.last_rms:.0f} peak={state.last_peak} out_rms={state.output_rms:.0f}",
                     end="",
                     flush=True,
                 )
@@ -142,10 +147,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--address", default=None)
     parser.add_argument("--scan-seconds", type=float, default=10.0)
-    parser.add_argument("--gain", type=float, default=1.0)
+    parser.add_argument("--gain", type=float, default=6.0)
     parser.add_argument("--buffer-ms", type=float, default=350.0)
     parser.add_argument("--output-rate", type=int, default=None)
     parser.add_argument("--save", default=None, metavar="FILE.wav")
+    parser.add_argument("--agc", action="store_true", help="Enable adaptive gain control.")
+    parser.add_argument("--noise-gate", action="store_true", help="Attenuate very quiet blocks.")
+    parser.add_argument("--noise-threshold", type=float, default=120.0)
+    parser.add_argument("--no-highpass", action="store_true", help="Disable DC/rumble high-pass cleanup.")
+    parser.add_argument("--no-latency-trim", action="store_true", help="Disable queue trimming.")
     args = parser.parse_args()
     return asyncio.run(main_async(args))
 
