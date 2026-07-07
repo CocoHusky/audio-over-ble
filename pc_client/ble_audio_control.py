@@ -85,15 +85,15 @@ class BleAudioControlApp:
         self.ui_events: queue.SimpleQueue[tuple[str, str]] = queue.SimpleQueue()
         self.controls_lock = threading.RLock()
 
-        self.gain = tk.DoubleVar(value=3.0)
+        self.gain = tk.DoubleVar(value=8.0)
         self.target_latency_ms = tk.DoubleVar(value=180.0)
         self.max_latency_ms = tk.DoubleVar(value=550.0)
         self.highpass_enabled = tk.BooleanVar(value=True)
         self.limiter_enabled = tk.BooleanVar(value=True)
         self.declick_enabled = tk.BooleanVar(value=True)
         self.agc_enabled = tk.BooleanVar(value=False)
-        self.agc_target = tk.DoubleVar(value=1600.0)
-        self.agc_max_gain = tk.DoubleVar(value=8.0)
+        self.agc_target = tk.DoubleVar(value=3000.0)
+        self.agc_max_gain = tk.DoubleVar(value=24.0)
         self.noise_gate_enabled = tk.BooleanVar(value=False)
         self.noise_gate_threshold = tk.DoubleVar(value=180.0)
         self.muted = tk.BooleanVar(value=False)
@@ -136,7 +136,7 @@ class BleAudioControlApp:
 
         playback = ttk.LabelFrame(outer, text="Live playback controls")
         playback.pack(fill="x", pady=(12, 0))
-        self._slider(playback, "Gain", self.gain, 0.0, 12.0, "x")
+        self._slider(playback, "Gain", self.gain, 0.0, 48.0, "x")
         self._slider(playback, "Target buffer", self.target_latency_ms, 80.0, 400.0, "ms")
         self._slider(playback, "Max buffer", self.max_latency_ms, 180.0, 900.0, "ms")
 
@@ -156,8 +156,8 @@ class BleAudioControlApp:
         row.pack(fill="x")
         ttk.Checkbutton(row, text="Enable AGC", variable=self.agc_enabled, command=self.apply_realtime_controls).pack(side="left")
         ttk.Label(row, textvariable=self.agc_label).pack(side="left", padx=12)
-        self._slider(agc, "AGC target RMS", self.agc_target, 300.0, 4000.0, "")
-        self._slider(agc, "AGC max gain", self.agc_max_gain, 1.0, 12.0, "x")
+        self._slider(agc, "AGC target RMS", self.agc_target, 300.0, 12000.0, "")
+        self._slider(agc, "AGC max gain", self.agc_max_gain, 1.0, 48.0, "x")
 
         gate = ttk.LabelFrame(outer, text="Optional soft noise gate")
         gate.pack(fill="x", pady=(12, 0))
