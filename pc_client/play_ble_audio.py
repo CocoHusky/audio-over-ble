@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simple terminal player: XIAO BLE LC3 mic -> Mac speaker output."""
+"""Simple terminal player: XIAO BLE ADPCM mic -> Mac speaker output."""
 
 from __future__ import annotations
 
@@ -16,7 +16,6 @@ from bleak.exc import BleakError
 from ble_audio_receiver import (
     AUDIO_CHAR_UUID,
     DEVICE_NAME,
-    JITTER_BUFFER_SAMPLES,
     SAMPLE_RATE_HZ,
     AudioStreamState,
     find_device,
@@ -113,10 +112,13 @@ async def main_async(args: argparse.Namespace) -> int:
             stream.start()
             print(f"Playing to Mac output at {output_rate} Hz. Ctrl+C to stop.")
 
+            last_packets = state.packets_received
             while True:
                 await asyncio.sleep(1.0)
+                packet_rate = state.packets_received - last_packets
+                last_packets = state.packets_received
                 print(
-                    f"\rpackets={state.packets_received} lost={state.packets_lost} "
+                    f"\rpackets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
                     f"bad={state.bad_packets} decode_fail={state.decode_failures} "
                     f"queued={len(state.sample_queue)} rms={state.last_rms:.0f} peak={state.last_peak}",
                     end="",
