@@ -1,8 +1,10 @@
 /*
  * XIAO nRF52840 Sense raw PCM microphone-over-BLE firmware.
  *
- * Captures the onboard PDM microphone as 16 kHz mono signed 16-bit PCM and
- * streams it through a custom BLE notify characteristic.
+ * Stability-first baseline:
+ *   - 8 kHz mono signed 16-bit PCM
+ *   - one BLE notification per 10 ms audio block
+ *   - 80 samples per packet = 164 bytes including the 4-byte app header
  *
  * Packet format:
  *   [uint16 little-endian seq]
@@ -32,25 +34,19 @@ LOG_MODULE_REGISTER(xiao_ble_mic, LOG_LEVEL_INF);
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
-#define SAMPLE_RATE_HZ 16000
+#define SAMPLE_RATE_HZ 8000
 #define CHANNELS 1
 #define SAMPLE_BIT_WIDTH 16
 #define BYTES_PER_SAMPLE (SAMPLE_BIT_WIDTH / 8)
 
-/*
- * 88 samples keeps each notification at 180 bytes:
- * 4-byte app header + 88 samples * 2 bytes/sample = 180 bytes.
- * This stays below the common 182-byte CoreBluetooth payload limit on macOS.
- */
-#define RAW_HEADER_SIZE 4
-#define RAW_FRAME_SAMPLES 88
-#define RAW_FRAME_BYTES (RAW_FRAME_SAMPLES * BYTES_PER_SAMPLE)
-#define RAW_PACKET_SIZE (RAW_HEADER_SIZE + RAW_FRAME_BYTES)
-
 #define READ_TIMEOUT_MS 100
 #define AUDIO_BLOCK_MS 10
-#define AUDIO_BLOCK_SIZE (SAMPLE_RATE_HZ / 1000 * AUDIO_BLOCK_MS * CHANNELS * BYTES_PER_SAMPLE)
-#define AUDIO_BLOCK_COUNT 8
+#define RAW_HEADER_SIZE 4
+#define RAW_FRAME_SAMPLES (SAMPLE_RATE_HZ / 1000 * AUDIO_BLOCK_MS)
+#define RAW_FRAME_BYTES (RAW_FRAME_SAMPLES * BYTES_PER_SAMPLE)
+#define RAW_PACKET_SIZE (RAW_HEADER_SIZE + RAW_FRAME_BYTES)
+#define AUDIO_BLOCK_SIZE RAW_FRAME_BYTES
+#define AUDIO_BLOCK_COUNT 12
 
 #define PDM_CONTROLLER_INDEX 0
 #define PDM_POWER_NODE DT_ALIAS(pdm_power)
@@ -69,6 +65,7 @@ static volatile bool stream_requested;
 static uint16_t tx_seq;
 static uint8_t tx_packet[RAW_PACKET_SIZE];
 static uint32_t notify_drop_count;
+static uint32_t notify_ok_count;
 
 static void advertise(void);
 static void advertise_work_handler(struct k_work *work);
@@ -93,6 +90,7 @@ static void ccc_cfg_changed(const struct bt_gatt_attr *attr, uint16_t value)
 	if (notify_enabled) {
 		tx_seq = 0;
 		notify_drop_count = 0;
+		notify_ok_count = 0;
 	}
 }
 
@@ -118,9 +116,16 @@ static const struct bt_data sd[] = {
 
 static void request_link_updates(struct bt_conn *conn)
 {
+	const struct bt_conn_le_data_len_param data_len = {
+		.tx_max_len = BT_GAP_DATA_LEN_MAX,
+		.tx_max_time = BT_GAP_DATA_TIME_MAX,
+	};
 	int err;
 
-	err = bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(6, 12, 0, 400));
+	/* Do not use the most aggressive 7.5 ms interval by default. A slightly
+	 * relaxed interval is usually more stable across macOS BLE adapters.
+	 */
+	err = bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(12, 24, 0, 400));
 	if (err) {
 		LOG_WRN("Connection parameter update failed: %d", err);
 	}
@@ -129,11 +134,6 @@ static void request_link_updates(struct bt_conn *conn)
 	if (err) {
 		LOG_WRN("2M PHY update failed: %d", err);
 	}
-
-	const struct bt_conn_le_data_len_param data_len = {
-		.tx_max_len = BT_GAP_DATA_LEN_MAX,
-		.tx_max_time = BT_GAP_DATA_TIME_MAX,
-	};
 
 	err = bt_conn_le_data_len_update(conn, &data_len);
 	if (err) {
@@ -157,6 +157,7 @@ static void connected(struct bt_conn *conn, uint8_t err)
 	stream_requested = false;
 	tx_seq = 0;
 	notify_drop_count = 0;
+	notify_ok_count = 0;
 	k_work_cancel_delayable(&advertise_work);
 
 	LOG_INF("Connected: %s", addr);
@@ -178,7 +179,7 @@ static void disconnected(struct bt_conn *conn, uint8_t reason)
 		current_conn = NULL;
 	}
 
-	k_work_reschedule(&advertise_work, K_MSEC(250));
+	k_work_reschedule(&advertise_work, K_MSEC(500));
 }
 
 BT_CONN_CB_DEFINE(conn_callbacks) = {
@@ -207,18 +208,17 @@ static void advertise(void)
 static void advertise_work_handler(struct k_work *work)
 {
 	ARG_UNUSED(work);
-
 	advertise();
 }
 
-static void send_pcm_frame(const int16_t *samples, uint16_t sample_count)
+static int send_pcm_frame(const int16_t *samples, uint16_t sample_count)
 {
 	int err;
 	size_t payload_bytes;
 	size_t packet_len;
 
 	if (!current_conn || !notify_enabled || sample_count == 0U) {
-		return;
+		return 0;
 	}
 
 	if (sample_count > RAW_FRAME_SAMPLES) {
@@ -238,13 +238,16 @@ static void send_pcm_frame(const int16_t *samples, uint16_t sample_count)
 			notify_enabled = false;
 			stream_requested = false;
 		}
-		if ((notify_drop_count % 100U) == 1U) {
-			LOG_WRN("Dropped PCM packets=%u latest_seq=%u err=%d",
-				notify_drop_count, tx_seq, err);
+		if ((notify_drop_count % 25U) == 1U) {
+			LOG_WRN("Dropped PCM packets=%u ok=%u latest_seq=%u err=%d",
+				notify_drop_count, notify_ok_count, tx_seq, err);
 		}
-	} else {
-		tx_seq++;
+		return err;
 	}
+
+	tx_seq++;
+	notify_ok_count++;
+	return 0;
 }
 
 static void send_pcm_block(const int16_t *samples, size_t sample_count)
@@ -255,8 +258,16 @@ static void send_pcm_block(const int16_t *samples, size_t sample_count)
 		size_t remaining = sample_count - offset;
 		uint16_t frame_samples = (uint16_t)(remaining > RAW_FRAME_SAMPLES ?
 			RAW_FRAME_SAMPLES : remaining);
+		int err;
 
-		send_pcm_frame(&samples[offset], frame_samples);
+		err = send_pcm_frame(&samples[offset], frame_samples);
+		if (err) {
+			/* Back off instead of hammering the controller queue. The next DMIC
+			 * block will arrive soon; stability is better than trying to send
+			 * every stale sample.
+			 */
+			break;
+		}
 		offset += frame_samples;
 	}
 }
@@ -315,7 +326,8 @@ int main(void)
 	int err;
 	bool stream_active = false;
 
-	LOG_INF("Starting raw 16-bit PCM BLE microphone stream");
+	LOG_INF("Starting stable raw PCM BLE microphone stream: %d Hz, %d-byte notifications",
+		SAMPLE_RATE_HZ, RAW_PACKET_SIZE);
 
 	err = enable_pdm_power();
 	if (err) {
@@ -354,7 +366,7 @@ int main(void)
 				stream_active = false;
 				LOG_INF("PDM stopped");
 			}
-			k_sleep(K_MSEC(20));
+			k_sleep(K_MSEC(50));
 			continue;
 		}
 
@@ -373,7 +385,9 @@ int main(void)
 
 		err = dmic_read(dmic_dev, 0, &buffer, &size, READ_TIMEOUT_MS);
 		if (err) {
-			LOG_WRN("PDM read failed: %d", err);
+			if (err != -EAGAIN) {
+				LOG_WRN("PDM read failed: %d", err);
+			}
 			continue;
 		}
 
