@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simple terminal player: XIAO BLE ADPCM mic -> Mac speaker output."""
+"""Simple terminal player: XIAO BLE u-law mic -> Mac speaker output."""
 
 from __future__ import annotations
 
@@ -81,8 +81,10 @@ async def main_async(args: argparse.Namespace) -> int:
     state.agc_enabled = args.agc
     state.noise_gate_enabled = args.noise_gate
     state.noise_gate_threshold = args.noise_threshold
+    state.agc_target_rms = args.agc_target
+    state.agc_max_gain = args.agc_max_gain
     state.target_queue_samples = int(SAMPLE_RATE_HZ * args.buffer_ms / 1000)
-    state.max_queue_samples = int(SAMPLE_RATE_HZ * max(args.buffer_ms * 3.0, 450.0) / 1000)
+    state.max_queue_samples = int(SAMPLE_RATE_HZ * max(args.buffer_ms * 3.0, 550.0) / 1000)
 
     output_rate = args.output_rate or default_output_rate()
     player = ResampledPlayer(state, output_rate)
@@ -117,20 +119,22 @@ async def main_async(args: argparse.Namespace) -> int:
             print(f"Playing to Mac output at {output_rate} Hz. Ctrl+C to stop.")
 
             last_packets = state.packets_received
+            last_line_len = 0
             while True:
                 await asyncio.sleep(1.0)
                 packet_rate = state.packets_received - last_packets
                 last_packets = state.packets_received
                 queued_ms = 1000.0 * len(state.sample_queue) / SAMPLE_RATE_HZ
-                print(
-                    f"\rpackets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
+                line = (
+                    f"packets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
                     f"bad={state.bad_packets} decode_fail={state.decode_failures} "
                     f"queued={len(state.sample_queue)}({queued_ms:.0f}ms) trimmed={state.samples_trimmed} "
                     f"underflows={state.underflows} rms={state.last_rms:.0f} peak={state.last_peak} "
-                    f"out_rms={state.output_rms:.0f}",
-                    end="",
-                    flush=True,
+                    f"out_rms={state.output_rms:.0f}"
                 )
+                clear = " " * max(0, last_line_len - len(line))
+                print(f"\r{line}{clear}", end="", flush=True)
+                last_line_len = len(line)
     except KeyboardInterrupt:
         pass
     finally:
@@ -149,15 +153,17 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--address", default=None)
     parser.add_argument("--scan-seconds", type=float, default=10.0)
-    parser.add_argument("--gain", type=float, default=6.0)
-    parser.add_argument("--buffer-ms", type=float, default=150.0)
+    parser.add_argument("--gain", type=float, default=3.0)
+    parser.add_argument("--buffer-ms", type=float, default=180.0)
     parser.add_argument("--latency", default="low", choices=["low", "high"])
     parser.add_argument("--blocksize", type=int, default=256)
     parser.add_argument("--output-rate", type=int, default=None)
     parser.add_argument("--save", default=None, metavar="FILE.wav")
     parser.add_argument("--agc", action="store_true", help="Enable adaptive gain control.")
-    parser.add_argument("--noise-gate", action="store_true", help="Attenuate very quiet blocks.")
-    parser.add_argument("--noise-threshold", type=float, default=120.0)
+    parser.add_argument("--agc-target", type=float, default=1600.0)
+    parser.add_argument("--agc-max-gain", type=float, default=8.0)
+    parser.add_argument("--noise-gate", action="store_true", help="Softly attenuate very quiet blocks.")
+    parser.add_argument("--noise-threshold", type=float, default=180.0)
     parser.add_argument("--no-highpass", action="store_true", help="Disable DC/rumble high-pass cleanup.")
     parser.add_argument("--no-latency-trim", action="store_true", help="Disable queue trimming.")
     args = parser.parse_args()
