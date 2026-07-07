@@ -1,34 +1,77 @@
 #!/usr/bin/env python3
-"""Small stable desktop control panel for the LC3 BLE microphone stream."""
+"""Simple desktop monitor for hearing the XIAO mic over BLE LC3."""
 
 from __future__ import annotations
 
 import asyncio
+import math
 import threading
 import tkinter as tk
 from tkinter import filedialog, ttk
 
+import numpy as np
 import sounddevice as sd
 from bleak import BleakClient
 from bleak.exc import BleakError
 
 from ble_audio_receiver import (
     AUDIO_CHAR_UUID,
-    CHANNELS,
     JITTER_BUFFER_SAMPLES,
-    PLAYBACK_BLOCKSIZE,
     SAMPLE_RATE_HZ,
     AudioStreamState,
     find_device,
 )
 
 
+def default_output_rate() -> int:
+    try:
+        device = sd.query_devices(kind="output")
+        return int(device.get("default_samplerate") or 48000)
+    except Exception:
+        return 48000
+
+
+class ResampledPlayback:
+    def __init__(self, state: AudioStreamState, output_rate: int):
+        self.state = state
+        self.output_rate = float(output_rate)
+        self.source = np.zeros(2, dtype=np.float32)
+        self.position = 0.0
+
+    def pull(self, frames: int) -> np.ndarray:
+        if frames <= 0:
+            return np.zeros(0, dtype=np.float32)
+
+        step = SAMPLE_RATE_HZ / self.output_rate
+        last_needed = self.position + step * max(frames - 1, 0)
+        needed_len = int(math.ceil(last_needed)) + 2
+
+        if len(self.source) < needed_len:
+            needed = needed_len - len(self.source)
+            new_samples = self.state.pull(max(needed, 64)).astype(np.float32) / 32768.0
+            self.source = np.concatenate((self.source, new_samples))
+
+        positions = self.position + step * np.arange(frames, dtype=np.float32)
+        indexes = np.arange(len(self.source), dtype=np.float32)
+        out = np.interp(positions, indexes, self.source).astype(np.float32)
+
+        self.position += step * frames
+        drop = int(self.position)
+        if drop > 0:
+            self.source = self.source[drop:]
+            if len(self.source) < 2:
+                self.source = np.pad(self.source, (0, 2 - len(self.source)))
+            self.position -= drop
+
+        return out
+
+
 class BleAudioControlApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("BLE Mic Monitor")
-        self.root.geometry("760x590")
-        self.root.minsize(660, 500)
+        self.root.geometry("760x540")
+        self.root.minsize(660, 470)
 
         self.state: AudioStreamState | None = None
         self.worker: threading.Thread | None = None
@@ -38,7 +81,6 @@ class BleAudioControlApp:
 
         self.gain = tk.DoubleVar(value=1.0)
         self.muted = tk.BooleanVar(value=False)
-        self.playback_enabled = tk.BooleanVar(value=False)
         self.auto_reconnect = tk.BooleanVar(value=False)
         self.adaptive_buffer_enabled = tk.BooleanVar(value=True)
         self.target_latency_ms = tk.DoubleVar(value=350.0)
@@ -73,12 +115,8 @@ class BleAudioControlApp:
         ttk.Checkbutton(header, text="Auto reconnect", variable=self.auto_reconnect).pack(side="left", padx=12)
         ttk.Label(header, textvariable=self.status).pack(side="left", padx=12)
 
-        playback = ttk.LabelFrame(outer, text=f"Playback / decode monitor ({SAMPLE_RATE_HZ} Hz LC3)")
+        playback = ttk.LabelFrame(outer, text=f"Playback ({SAMPLE_RATE_HZ} Hz LC3 from device, Mac output auto-matched)")
         playback.pack(fill="x", pady=(14, 0))
-        row = ttk.Frame(playback, padding=(10, 10, 10, 0))
-        row.pack(fill="x")
-        ttk.Checkbutton(row, text="Enable Mac speaker playback", variable=self.playback_enabled).pack(side="left")
-        ttk.Label(row, text="Off by default to avoid macOS CoreAudio/PortAudio crashes").pack(side="left", padx=12)
         self._slider(playback, "Gain", self.gain, 0.0, 20.0, "x")
         row = ttk.Frame(playback, padding=(10, 0, 10, 10))
         row.pack(fill="x")
@@ -240,14 +278,17 @@ class BleAudioControlApp:
         state = AudioStreamState(save_path=self.save_path, gain=self.gain.get())
         self.state = state
         self.apply_realtime_controls()
-        stream = None
+
+        output_rate = default_output_rate()
+        player = ResampledPlayback(state, output_rate)
 
         def audio_callback(outdata, frames, time_info, status):
             del time_info
             if status:
                 self.root.after(0, lambda: self.status.set(str(status)))
-            outdata[:, 0] = state.pull(frames)
+            outdata[:, 0] = player.pull(frames)
 
+        stream = None
         try:
             disconnected = asyncio.Event()
             loop = asyncio.get_running_loop()
@@ -269,23 +310,16 @@ class BleAudioControlApp:
                 if self.stop_requested.is_set():
                     return
 
-                if self.playback_enabled.get():
-                    try:
-                        stream = sd.OutputStream(
-                            samplerate=SAMPLE_RATE_HZ,
-                            channels=CHANNELS,
-                            dtype="int16",
-                            callback=audio_callback,
-                            blocksize=PLAYBACK_BLOCKSIZE,
-                            latency="high",
-                        )
-                        stream.start()
-                        self.root.after(0, lambda: self.status.set("Playing"))
-                    except Exception as exc:
-                        stream = None
-                        self.root.after(0, lambda: self.status.set(f"Connected; playback disabled: {exc}"))
-                else:
-                    self.root.after(0, lambda: self.status.set("Connected; decode monitor only"))
+                stream = sd.OutputStream(
+                    samplerate=output_rate,
+                    channels=1,
+                    dtype="float32",
+                    callback=audio_callback,
+                    blocksize=0,
+                    latency="high",
+                )
+                stream.start()
+                self.root.after(0, lambda: self.status.set(f"Playing to Mac output at {output_rate} Hz"))
 
                 last_packets = -1
                 stalled_ticks = 0
@@ -305,10 +339,7 @@ class BleAudioControlApp:
                     else:
                         stalled_ticks = 0
                         if packets > 0:
-                            if self.playback_enabled.get() and stream is not None:
-                                self.root.after(0, lambda: self.status.set("Playing"))
-                            else:
-                                self.root.after(0, lambda: self.status.set("Receiving LC3 packets"))
+                            self.root.after(0, lambda: self.status.set(f"Playing to Mac output at {output_rate} Hz"))
                     last_packets = packets
 
                     if stalled_ticks == 20:
