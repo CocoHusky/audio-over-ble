@@ -2,7 +2,7 @@
 
 Stream raw microphone audio from a Seeed XIAO nRF52840 Sense's onboard PDM microphone to a PC over BLE, and play it live.
 
-This is the **known-good raw 16-bit PCM baseline**. The XIAO captures 16 kHz mono PCM and sends it directly over a custom BLE notify characteristic. There is no Opus firmware build, no host-side Opus build, and no audio compression in this path. That makes it easier to debug true microphone quality before adding compression back later.
+This is the **stability-first raw 16-bit PCM baseline**. The XIAO captures 8 kHz mono PCM and sends it directly over a custom BLE notify characteristic. There is no Opus firmware build, no host-side Opus build, and no audio compression in this path. The lower 8 kHz default is intentional: it cuts BLE bandwidth in half compared with 16 kHz raw PCM and avoids connect/disconnect flapping while we debug the real microphone signal.
 
 The previous real-Opus experiment is archived on `archive/real-opus-implementation`. Use `main` for bring-up, flashing, and baseline audio testing.
 
@@ -56,7 +56,7 @@ The device should advertise as `CocoHusky-AudioStream`. The PC client should con
 
 The firmware is a Nordic nRF Connect SDK application built on Zephyr. It no longer uses Arduino.
 
-Open the serial console at 115200 baud. You should see the device advertising as `CocoHusky-AudioStream`.
+Open the serial console at 115200 baud. You should see the device advertising as `CocoHusky-AudioStream` and logging an 8 kHz stable raw PCM stream.
 
 ## PC client setup (`pc_client/`)
 
@@ -78,35 +78,37 @@ bash setup_pc.sh
 
 ## How it is structured
 
-- **Firmware** captures PDM samples at 16 kHz mono with Zephyr's DMIC driver and sends raw 16-bit little-endian PCM frames over BLE notifications.
+- **Firmware** captures PDM samples at 8 kHz mono with Zephyr's DMIC driver and sends raw 16-bit little-endian PCM frames over BLE notifications.
 - **Packet format** is `[uint16 seq][uint16 sample_count][int16 PCM samples...]`.
 - **PC client** uses `bleak` to subscribe to notifications, converts the PCM payload directly into NumPy `int16` samples, queues them, and `sounddevice` pulls from that queue in a real-time audio callback.
+- **Control UI** no longer disconnects just because packet flow temporarily stalls. It keeps the BLE connection open and shows `Connected; waiting for audio packets` until packets resume or the actual BLE link disconnects.
 
 ## Bandwidth math
 
-Raw 16 kHz mono 16-bit PCM is about 256 kbps before BLE overhead:
+Raw 8 kHz mono 16-bit PCM is about 128 kbps before BLE overhead:
 
 ```text
-16,000 samples/s * 16 bits/sample = 256,000 bits/s
+8,000 samples/s * 16 bits/sample = 128,000 bits/s
 ```
 
-The firmware uses 88-sample packets so each notification is 180 bytes:
+The firmware uses 80-sample packets so each 10 ms audio block is one 164-byte notification:
 
 ```text
-4-byte app header + 88 samples * 2 bytes/sample = 180 bytes
+4-byte app header + 80 samples * 2 bytes/sample = 164 bytes
 ```
 
-That packet size intentionally stays below the common 182-byte macOS CoreBluetooth notification payload limit while still keeping each packet large enough for live testing.
+This is intentionally below the common macOS CoreBluetooth notification payload limit and avoids the old 16 kHz behavior where a 10 ms audio block had to be split into multiple BLE notifications.
 
-This raw PCM path pushes BLE harder than the old Opus path. If you see `lost=` or `bad=` climbing in the PC client's status line:
+If you still see real BLE disconnects:
 
-- Move the board closer to the PC / reduce RF interference first
-- Confirm your PC's BLE adapter/driver supports the 2M PHY and data-length extension
-- Lower the sample rate or add compression after confirming the raw mic signal sounds clean
+- Keep the XIAO close to the Mac for the first test
+- Turn off other heavy Bluetooth devices briefly
+- Use the terminal receiver first to remove UI variables: `python ble_audio_receiver.py --save capture.wav`
+- Watch firmware serial logs for `Dropped PCM packets` or a BLE disconnect reason code
 
 This is still a bring-up path, not Bluetooth LE Audio. A production BLE audio product would use LC3 over isochronous channels. This repo intentionally keeps the custom GATT service so the XIAO can stream directly to the Python client on a Mac.
 
 ## Next steps
 
-- Use this raw PCM path to judge microphone quality, gain, clipping, noise, and packet loss without codec artifacts.
-- After the raw path sounds correct, add compression back with a smaller embedded codec path or LC3/ISO if you want to follow the standard BLE audio architecture.
+- Use this stable 8 kHz raw PCM path to judge microphone wiring, gain, clipping, noise, and packet loss without codec artifacts.
+- After the link stays connected and audio is understandable, increase sample rate or add compression back with a smaller embedded codec path.
