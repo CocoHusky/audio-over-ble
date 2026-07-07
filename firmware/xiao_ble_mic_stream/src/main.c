@@ -252,7 +252,8 @@ static void send_pcm_block(const int16_t *samples, size_t sample_count)
 
 	while (offset < sample_count && notify_enabled) {
 		size_t remaining = sample_count - offset;
-		uint16_t frame_samples = (uint16_t)MIN(remaining, (size_t)RAW_FRAME_SAMPLES);
+		uint16_t frame_samples = (uint16_t)(remaining > RAW_FRAME_SAMPLES ?
+			RAW_FRAME_SAMPLES : remaining);
 
 		send_pcm_frame(&samples[offset], frame_samples);
 		offset += frame_samples;
