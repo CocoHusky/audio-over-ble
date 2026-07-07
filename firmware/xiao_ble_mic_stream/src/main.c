@@ -2,9 +2,9 @@
  * XIAO nRF52840 Sense raw PCM microphone-over-BLE firmware.
  *
  * Stability-first baseline:
- *   - 8 kHz mono signed 16-bit PCM
- *   - one BLE notification per 10 ms audio block
- *   - 80 samples per packet = 164 bytes including the 4-byte app header
+ *   - captures the PDM microphone at 16 kHz, which is the safer mic rate
+ *   - downsamples by 2 for an 8 kHz BLE stream
+ *   - sends one 164-byte BLE notification per 10 ms output block
  *
  * Packet format:
  *   [uint16 little-endian seq]
@@ -34,7 +34,9 @@ LOG_MODULE_REGISTER(xiao_ble_mic, LOG_LEVEL_INF);
 #define DEVICE_NAME CONFIG_BT_DEVICE_NAME
 #define DEVICE_NAME_LEN (sizeof(DEVICE_NAME) - 1)
 
-#define SAMPLE_RATE_HZ 8000
+#define PDM_SAMPLE_RATE_HZ 16000
+#define BLE_SAMPLE_RATE_HZ 8000
+#define BLE_DOWNSAMPLE_FACTOR (PDM_SAMPLE_RATE_HZ / BLE_SAMPLE_RATE_HZ)
 #define CHANNELS 1
 #define SAMPLE_BIT_WIDTH 16
 #define BYTES_PER_SAMPLE (SAMPLE_BIT_WIDTH / 8)
@@ -42,10 +44,11 @@ LOG_MODULE_REGISTER(xiao_ble_mic, LOG_LEVEL_INF);
 #define READ_TIMEOUT_MS 100
 #define AUDIO_BLOCK_MS 10
 #define RAW_HEADER_SIZE 4
-#define RAW_FRAME_SAMPLES (SAMPLE_RATE_HZ / 1000 * AUDIO_BLOCK_MS)
-#define RAW_FRAME_BYTES (RAW_FRAME_SAMPLES * BYTES_PER_SAMPLE)
+#define PDM_BLOCK_SAMPLES (PDM_SAMPLE_RATE_HZ / 1000 * AUDIO_BLOCK_MS)
+#define BLE_FRAME_SAMPLES (BLE_SAMPLE_RATE_HZ / 1000 * AUDIO_BLOCK_MS)
+#define RAW_FRAME_BYTES (BLE_FRAME_SAMPLES * BYTES_PER_SAMPLE)
 #define RAW_PACKET_SIZE (RAW_HEADER_SIZE + RAW_FRAME_BYTES)
-#define AUDIO_BLOCK_SIZE RAW_FRAME_BYTES
+#define AUDIO_BLOCK_SIZE (PDM_BLOCK_SAMPLES * BYTES_PER_SAMPLE)
 #define AUDIO_BLOCK_COUNT 12
 
 #define PDM_CONTROLLER_INDEX 0
@@ -64,6 +67,7 @@ static volatile bool notify_enabled;
 static volatile bool stream_requested;
 static uint16_t tx_seq;
 static uint8_t tx_packet[RAW_PACKET_SIZE];
+static int16_t ble_frame[BLE_FRAME_SAMPLES];
 static uint32_t notify_drop_count;
 static uint32_t notify_ok_count;
 
@@ -122,9 +126,6 @@ static void request_link_updates(struct bt_conn *conn)
 	};
 	int err;
 
-	/* Do not use the most aggressive 7.5 ms interval by default. A slightly
-	 * relaxed interval is usually more stable across macOS BLE adapters.
-	 */
 	err = bt_conn_le_param_update(conn, BT_LE_CONN_PARAM(12, 24, 0, 400));
 	if (err) {
 		LOG_WRN("Connection parameter update failed: %d", err);
@@ -211,7 +212,7 @@ static void advertise_work_handler(struct k_work *work)
 	advertise();
 }
 
-static int send_pcm_frame(const int16_t *samples, uint16_t sample_count)
+static int send_ble_frame(const int16_t *samples, uint16_t sample_count)
 {
 	int err;
 	size_t payload_bytes;
@@ -221,8 +222,8 @@ static int send_pcm_frame(const int16_t *samples, uint16_t sample_count)
 		return 0;
 	}
 
-	if (sample_count > RAW_FRAME_SAMPLES) {
-		sample_count = RAW_FRAME_SAMPLES;
+	if (sample_count > BLE_FRAME_SAMPLES) {
+		sample_count = BLE_FRAME_SAMPLES;
 	}
 
 	payload_bytes = sample_count * BYTES_PER_SAMPLE;
@@ -250,25 +251,29 @@ static int send_pcm_frame(const int16_t *samples, uint16_t sample_count)
 	return 0;
 }
 
+static size_t downsample_16k_to_8k(const int16_t *in, size_t in_samples, int16_t *out, size_t out_capacity)
+{
+	size_t out_count = 0;
+
+	for (size_t i = 0; i + 1 < in_samples && out_count < out_capacity; i += 2) {
+		int32_t mixed = (int32_t)in[i] + (int32_t)in[i + 1];
+		out[out_count++] = (int16_t)(mixed / 2);
+	}
+
+	return out_count;
+}
+
 static void send_pcm_block(const int16_t *samples, size_t sample_count)
 {
-	size_t offset = 0;
+	size_t ble_count;
 
-	while (offset < sample_count && notify_enabled) {
-		size_t remaining = sample_count - offset;
-		uint16_t frame_samples = (uint16_t)(remaining > RAW_FRAME_SAMPLES ?
-			RAW_FRAME_SAMPLES : remaining);
-		int err;
+	if (!notify_enabled) {
+		return;
+	}
 
-		err = send_pcm_frame(&samples[offset], frame_samples);
-		if (err) {
-			/* Back off instead of hammering the controller queue. The next DMIC
-			 * block will arrive soon; stability is better than trying to send
-			 * every stale sample.
-			 */
-			break;
-		}
-		offset += frame_samples;
+	ble_count = downsample_16k_to_8k(samples, sample_count, ble_frame, ARRAY_SIZE(ble_frame));
+	if (ble_count > 0) {
+		(void)send_ble_frame(ble_frame, (uint16_t)ble_count);
 	}
 }
 
@@ -276,7 +281,7 @@ static int configure_pdm(void)
 {
 	struct pcm_stream_cfg stream = {
 		.pcm_width = SAMPLE_BIT_WIDTH,
-		.pcm_rate = SAMPLE_RATE_HZ,
+		.pcm_rate = PDM_SAMPLE_RATE_HZ,
 		.block_size = AUDIO_BLOCK_SIZE,
 		.mem_slab = &audio_slab,
 	};
@@ -326,8 +331,8 @@ int main(void)
 	int err;
 	bool stream_active = false;
 
-	LOG_INF("Starting stable raw PCM BLE microphone stream: %d Hz, %d-byte notifications",
-		SAMPLE_RATE_HZ, RAW_PACKET_SIZE);
+	LOG_INF("Starting stable raw PCM BLE microphone stream: PDM %d Hz, BLE %d Hz, %d-byte notifications",
+		PDM_SAMPLE_RATE_HZ, BLE_SAMPLE_RATE_HZ, RAW_PACKET_SIZE);
 
 	err = enable_pdm_power();
 	if (err) {
