@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simple desktop monitor for hearing the XIAO mic over BLE LC3."""
+"""Simple desktop monitor for hearing the XIAO mic over BLE ADPCM."""
 
 from __future__ import annotations
 
@@ -131,7 +131,7 @@ class BleAudioControlApp:
         ttk.Checkbutton(header, text="Auto reconnect", variable=self.auto_reconnect).pack(side="left", padx=12)
         ttk.Label(header, textvariable=self.status).pack(side="left", padx=12)
 
-        playback = ttk.LabelFrame(outer, text=f"Playback ({SAMPLE_RATE_HZ} Hz LC3 from device, Mac output auto-matched)")
+        playback = ttk.LabelFrame(outer, text=f"Playback ({SAMPLE_RATE_HZ} Hz ADPCM from device, Mac output auto-matched)")
         playback.pack(fill="x", pady=(14, 0))
         self._slider(playback, "Gain", self.gain, 0.0, 20.0, "x")
         row = ttk.Frame(playback, padding=(10, 0, 10, 10))
@@ -179,7 +179,7 @@ class BleAudioControlApp:
         row = ttk.Frame(parent, padding=(10, 8, 10, 0))
         row.pack(fill="x")
         ttk.Label(row, text=label, width=16).pack(side="left")
-        scale = ttk.Scale(row, from_=start, to=end, orient="horizontal", variable=variable, command=lambda _value: self.apply_realtime_controls())
+        scale = ttk.Scale(parent=row, from_=start, to=end, orient="horizontal", variable=variable, command=lambda _value: self.apply_realtime_controls())
         scale.pack(side="left", fill="x", expand=True, padx=8)
         value = ttk.Label(row, width=10)
         value.pack(side="left")
