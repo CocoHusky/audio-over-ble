@@ -71,8 +71,8 @@ class BleAudioControlApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("BLE Mic Monitor")
-        self.root.geometry("760x540")
-        self.root.minsize(660, 470)
+        self.root.geometry("780x660")
+        self.root.minsize(680, 560)
 
         self.state: AudioStreamState | None = None
         self.worker: threading.Thread | None = None
@@ -82,36 +82,44 @@ class BleAudioControlApp:
         self.ui_events: queue.SimpleQueue[tuple[str, str]] = queue.SimpleQueue()
         self.controls_lock = threading.RLock()
         self.controls = {
-            "gain": 1.0,
+            "gain": 6.0,
             "muted": False,
             "auto_reconnect": False,
             "adaptive_buffer_enabled": True,
+            "latency_trim_enabled": True,
             "target_latency_ms": 350.0,
             "max_latency_ms": 1200.0,
+            "highpass_enabled": True,
+            "noise_gate_enabled": False,
+            "noise_gate_threshold": 120.0,
             "declick_enabled": True,
             "limiter_enabled": True,
             "agc_enabled": False,
-            "agc_target": 1800.0,
-            "agc_max_gain": 12.0,
+            "agc_target": 2200.0,
+            "agc_max_gain": 24.0,
         }
 
-        self.gain = tk.DoubleVar(value=1.0)
+        self.gain = tk.DoubleVar(value=6.0)
         self.muted = tk.BooleanVar(value=False)
         self.auto_reconnect = tk.BooleanVar(value=False)
         self.adaptive_buffer_enabled = tk.BooleanVar(value=True)
+        self.latency_trim_enabled = tk.BooleanVar(value=True)
         self.target_latency_ms = tk.DoubleVar(value=350.0)
         self.max_latency_ms = tk.DoubleVar(value=1200.0)
+        self.highpass_enabled = tk.BooleanVar(value=True)
+        self.noise_gate_enabled = tk.BooleanVar(value=False)
+        self.noise_gate_threshold = tk.DoubleVar(value=120.0)
         self.declick_enabled = tk.BooleanVar(value=True)
         self.limiter_enabled = tk.BooleanVar(value=True)
         self.agc_enabled = tk.BooleanVar(value=False)
-        self.agc_target = tk.DoubleVar(value=1800.0)
-        self.agc_max_gain = tk.DoubleVar(value=12.0)
+        self.agc_target = tk.DoubleVar(value=2200.0)
+        self.agc_max_gain = tk.DoubleVar(value=24.0)
 
         self.status = tk.StringVar(value="Disconnected")
         self.device = tk.StringVar(value="")
         self.save_label = tk.StringVar(value="Not recording")
         self.packet_label = tk.StringVar(value="packets=0 lost=0 bad=0 decode_fail=0")
-        self.queue_label = tk.StringVar(value="queued=0 concealed=0 underflows=0 refills=0")
+        self.queue_label = tk.StringVar(value="queued=0 trimmed=0 concealed=0 underflows=0 refills=0")
         self.input_level_label = tk.StringVar(value="input rms=0 peak=0")
         self.output_level_label = tk.StringVar(value="output rms=0 peak=0")
         self.agc_label = tk.StringVar(value="agc gain=1.0x")
@@ -133,18 +141,27 @@ class BleAudioControlApp:
 
         playback = ttk.LabelFrame(outer, text=f"Playback ({SAMPLE_RATE_HZ} Hz ADPCM from device, Mac output auto-matched)")
         playback.pack(fill="x", pady=(14, 0))
-        self._slider(playback, "Gain", self.gain, 0.0, 20.0, "x")
+        self._slider(playback, "Gain", self.gain, 0.0, 24.0, "x")
         row = ttk.Frame(playback, padding=(10, 0, 10, 10))
         row.pack(fill="x")
         ttk.Checkbutton(row, text="Mute", variable=self.muted, command=self.apply_realtime_controls).pack(side="left")
         ttk.Checkbutton(row, text="Limiter", variable=self.limiter_enabled, command=self.apply_realtime_controls).pack(side="left", padx=16)
         ttk.Checkbutton(row, text="De-click", variable=self.declick_enabled, command=self.apply_realtime_controls).pack(side="left", padx=16)
 
+        cleanup = ttk.LabelFrame(outer, text="Noise cleanup")
+        cleanup.pack(fill="x", pady=(14, 0))
+        row = ttk.Frame(cleanup, padding=(10, 10, 10, 0))
+        row.pack(fill="x")
+        ttk.Checkbutton(row, text="High-pass / DC cleanup", variable=self.highpass_enabled, command=self.apply_realtime_controls).pack(side="left")
+        ttk.Checkbutton(row, text="Noise gate", variable=self.noise_gate_enabled, command=self.apply_realtime_controls).pack(side="left", padx=16)
+        self._slider(cleanup, "Gate threshold", self.noise_gate_threshold, 20.0, 900.0, "")
+
         stability = ttk.LabelFrame(outer, text="Stability")
         stability.pack(fill="x", pady=(14, 0))
         row = ttk.Frame(stability, padding=(10, 10, 10, 0))
         row.pack(fill="x")
         ttk.Checkbutton(row, text="Adaptive buffer", variable=self.adaptive_buffer_enabled, command=self.apply_realtime_controls).pack(side="left")
+        ttk.Checkbutton(row, text="Trim old queued audio", variable=self.latency_trim_enabled, command=self.apply_realtime_controls).pack(side="left", padx=16)
         self._slider(stability, "Target queue", self.target_latency_ms, 150.0, 1000.0, "ms")
         self._slider(stability, "Max queue", self.max_latency_ms, 300.0, 2500.0, "ms")
 
@@ -154,8 +171,8 @@ class BleAudioControlApp:
         row.pack(fill="x")
         ttk.Checkbutton(row, text="Enable AGC", variable=self.agc_enabled, command=self.apply_realtime_controls).pack(side="left")
         ttk.Label(row, textvariable=self.agc_label).pack(side="left", padx=16)
-        self._slider(agc, "Target RMS", self.agc_target, 300.0, 5000.0, "")
-        self._slider(agc, "Max AGC gain", self.agc_max_gain, 1.0, 20.0, "x")
+        self._slider(agc, "Target RMS", self.agc_target, 300.0, 6000.0, "")
+        self._slider(agc, "Max AGC gain", self.agc_max_gain, 1.0, 32.0, "x")
 
         record = ttk.LabelFrame(outer, text="Recording")
         record.pack(fill="x", pady=(14, 0))
@@ -255,8 +272,12 @@ class BleAudioControlApp:
             "muted": self.muted.get(),
             "auto_reconnect": self.auto_reconnect.get(),
             "adaptive_buffer_enabled": self.adaptive_buffer_enabled.get(),
+            "latency_trim_enabled": self.latency_trim_enabled.get(),
             "target_latency_ms": self.target_latency_ms.get(),
             "max_latency_ms": self.max_latency_ms.get(),
+            "highpass_enabled": self.highpass_enabled.get(),
+            "noise_gate_enabled": self.noise_gate_enabled.get(),
+            "noise_gate_threshold": self.noise_gate_threshold.get(),
             "declick_enabled": self.declick_enabled.get(),
             "limiter_enabled": self.limiter_enabled.get(),
             "agc_enabled": self.agc_enabled.get(),
@@ -272,8 +293,12 @@ class BleAudioControlApp:
             state.gain = values["gain"]
             state.muted = values["muted"]
             state.adaptive_buffer_enabled = values["adaptive_buffer_enabled"]
+            state.latency_trim_enabled = values["latency_trim_enabled"]
             state.target_queue_samples = int(SAMPLE_RATE_HZ * values["target_latency_ms"] / 1000)
             state.max_queue_samples = int(SAMPLE_RATE_HZ * values["max_latency_ms"] / 1000)
+            state.highpass_enabled = values["highpass_enabled"]
+            state.noise_gate_enabled = values["noise_gate_enabled"]
+            state.noise_gate_threshold = values["noise_gate_threshold"]
             state.declick_enabled = values["declick_enabled"]
             state.limiter_enabled = values["limiter_enabled"]
             state.agc_enabled = values["agc_enabled"]
@@ -287,7 +312,7 @@ class BleAudioControlApp:
         if state is not None:
             with state.lock:
                 self.packet_label.set(f"packets={state.packets_received} lost={state.packets_lost} bad={state.bad_packets} decode_fail={state.decode_failures}")
-                self.queue_label.set(f"queued={len(state.sample_queue)} concealed={state.samples_dropped} underflows={state.underflows} refills={state.buffer_refills}")
+                self.queue_label.set(f"queued={len(state.sample_queue)} trimmed={state.samples_trimmed} concealed={state.samples_dropped} underflows={state.underflows} refills={state.buffer_refills}")
                 self.input_level_label.set(f"input rms={state.last_rms:.0f} peak={state.last_peak}")
                 self.output_level_label.set(f"output rms={state.output_rms:.0f} peak={state.output_peak}")
                 self.agc_label.set(f"agc gain={state.agc_gain:.1f}x")
@@ -421,8 +446,12 @@ class BleAudioControlApp:
             state.gain = values["gain"]
             state.muted = values["muted"]
             state.adaptive_buffer_enabled = values["adaptive_buffer_enabled"]
+            state.latency_trim_enabled = values["latency_trim_enabled"]
             state.target_queue_samples = int(SAMPLE_RATE_HZ * values["target_latency_ms"] / 1000)
             state.max_queue_samples = int(SAMPLE_RATE_HZ * values["max_latency_ms"] / 1000)
+            state.highpass_enabled = values["highpass_enabled"]
+            state.noise_gate_enabled = values["noise_gate_enabled"]
+            state.noise_gate_threshold = values["noise_gate_threshold"]
             state.declick_enabled = values["declick_enabled"]
             state.limiter_enabled = values["limiter_enabled"]
             state.agc_enabled = values["agc_enabled"]
