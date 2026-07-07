@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-audio-over-ble — PC client
----------------------------
+audio-over-ble — raw PCM PC client
+----------------------------------
 Connects to the XIAO nRF52840 Sense over BLE, subscribes to the audio
-characteristic, decodes Opus frames, and plays live through your default
-output device.
+characteristic, receives raw 16-bit PCM frames, and plays live through your
+default output device.
 
 Packet format expected (must match firmware):
-    [uint16 LE seq][uint16 LE decoded_samples][uint16 LE opus_len][opus payload...]
+    [uint16 LE seq][uint16 LE sample_count][signed 16-bit LE PCM payload...]
 
 Usage:
     python ble_audio_receiver.py                 # auto-scan for the device
@@ -32,19 +32,17 @@ import sounddevice as sd
 from bleak import BleakClient, BleakScanner
 from bleak.exc import BleakError
 
-from opus_codec import OpusDecoder, OpusError
-
-# Must match the firmware .ino exactly.
 SERVICE_UUID = "04a77077-8d9a-4cd2-bf83-f7adafa02251"
 AUDIO_CHAR_UUID = "30fafbf6-9ec3-41ae-86b9-60cbf31328bb"
 DEVICE_NAME = "CocoHusky-AudioStream"
 
 SAMPLE_RATE_HZ = 16000
 CHANNELS = 1
+BYTES_PER_SAMPLE = 2
+RAW_HEADER_SIZE = 4
 
-# How much audio to buffer before starting playback. Bigger = more
-# resistant to BLE jitter, but adds latency. 200ms is a reasonable start.
-JITTER_BUFFER_MS = 200
+# Bigger = more resistant to BLE jitter, but adds latency.
+JITTER_BUFFER_MS = 250
 JITTER_BUFFER_SAMPLES = int(SAMPLE_RATE_HZ * JITTER_BUFFER_MS / 1000)
 PLAYBACK_BLOCKSIZE = 512
 
@@ -59,6 +57,7 @@ class AudioStreamState:
         self.packets_lost = 0
         self.underflows = 0
         self.buffer_refills = 0
+        self.bad_packets = 0
         self.started_playback = False
         self.refilling_buffer = False
         self.gain = gain
@@ -92,7 +91,6 @@ class AudioStreamState:
         self._lp_prev_y = 0.0
         self._last_processed_tail = np.zeros(0, dtype=np.int16)
         self._last_output_sample = 0.0
-        self.decoder = OpusDecoder(SAMPLE_RATE_HZ, CHANNELS)
         self.last_rms = 0.0
         self.last_peak = 0
         self.output_rms = 0.0
@@ -101,22 +99,26 @@ class AudioStreamState:
         if save_path:
             self.wav_writer = wave.open(save_path, "wb")
             self.wav_writer.setnchannels(CHANNELS)
-            self.wav_writer.setsampwidth(2)  # 16-bit
+            self.wav_writer.setsampwidth(BYTES_PER_SAMPLE)
             self.wav_writer.setframerate(SAMPLE_RATE_HZ)
 
     def handle_notification(self, _handle, data: bytearray):
-        if len(data) < 6:
-            return
-        seq = data[0] | (data[1] << 8)
-        frame_samples = data[2] | (data[3] << 8)
-        payload_len = data[4] | (data[5] << 8)
-        if frame_samples <= 0 or payload_len <= 0 or len(data) < 6 + payload_len:
+        if len(data) < RAW_HEADER_SIZE:
+            self.bad_packets += 1
             return
 
-        payload = bytes(data[6:6 + payload_len])
-        try:
-            sample_array = self.decoder.decode(payload, frame_samples)
-        except OpusError:
+        seq = data[0] | (data[1] << 8)
+        frame_samples = data[2] | (data[3] << 8)
+        payload = bytes(data[RAW_HEADER_SIZE:])
+        expected_bytes = frame_samples * BYTES_PER_SAMPLE
+
+        if frame_samples <= 0 or len(payload) != expected_bytes:
+            self.bad_packets += 1
+            return
+
+        sample_array = np.frombuffer(payload, dtype="<i2").copy()
+        if len(sample_array) != frame_samples:
+            self.bad_packets += 1
             return
 
         if len(sample_array):
@@ -131,10 +133,7 @@ class AudioStreamState:
                     if gap < 1000:  # sanity bound, ignore wraparound weirdness
                         self.packets_lost += gap
                         for _ in range(gap):
-                            try:
-                                concealment = self.decoder.decode(None, frame_samples)
-                            except OpusError:
-                                concealment = self._conceal_samples(frame_samples)
+                            concealment = self._conceal_samples(frame_samples)
                             processed_concealment = self._process_samples(concealment)
                             self.sample_queue.extend(processed_concealment.tolist())
                             self.samples_dropped += len(processed_concealment)
@@ -285,7 +284,6 @@ class AudioStreamState:
     def close(self):
         if self.wav_writer is not None:
             self.wav_writer.close()
-        self.decoder.close()
 
 
 async def find_device(timeout=8.0):
@@ -326,10 +324,8 @@ async def run(address: str | None, save_path: str | None, gain: float):
     async with BleakClient(address) as client:
         print(f"Connected to {address}")
         await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
-        print("Subscribed to audio characteristic. Buffering...")
+        print("Subscribed to raw PCM audio characteristic. Buffering...")
 
-        # Wait until we've got enough samples queued before starting
-        # playback, so the callback doesn't starve immediately.
         while len(state.sample_queue) < JITTER_BUFFER_SAMPLES:
             await asyncio.sleep(0.02)
 
@@ -342,6 +338,7 @@ async def run(address: str | None, save_path: str | None, gain: float):
                 print(
                     f"\rpackets={state.packets_received} "
                     f"lost={state.packets_lost} "
+                    f"bad={state.bad_packets} "
                     f"queued_samples={len(state.sample_queue)} "
                     f"dropped_samples_concealed={state.samples_dropped} "
                     f"underflows={state.underflows} "
