@@ -1,4 +1,5 @@
 build/
+**/build/
 *.o
 *.obj
 *.a
@@ -8,6 +9,17 @@ build/
 *.hex
 *.bin
 *.uf2
+*.map
+*.lst
+*.sym
 .DS_Store
 CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
 compile_commands.json
+.ninja_*
+build.ninja
+__pycache__/
+*.py[cod]
+venv/
+.venv/
