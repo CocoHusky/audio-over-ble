@@ -182,7 +182,6 @@ static int configure_lc3(void)
 		LOG_ERR("LC3 encoder setup failed");
 		return -EINVAL;
 	}
-	lc3_encoder_disable_ltpf(lc3_encoder);
 	return 0;
 }
 
