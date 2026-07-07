@@ -86,14 +86,18 @@ Raw 16 kHz mono 16-bit PCM is about 256 kbps before BLE overhead:
 16,000 samples/s * 16 bits/sample = 256,000 bits/s
 ```
 
-The firmware uses 120-sample packets so the full notification is 244 bytes:
+The firmware uses 88-sample packets so each notification is 180 bytes:
 
 ```text
-4-byte app header + 120 samples * 2 bytes/sample = 244 bytes
+4-byte app header + 88 samples * 2 bytes/sample = 180 bytes
 ```
 
-This intentionally pushes BLE harder than the Opus path. If you see `lost=` or
-`bad=` climbing in the PC client's status line:
+That packet size intentionally stays below the common 182-byte macOS
+CoreBluetooth notification payload limit while still keeping each packet large
+enough for live testing.
+
+This raw PCM path pushes BLE harder than the old Opus path. If you see `lost=`
+or `bad=` climbing in the PC client's status line:
 
 - Move the board closer to the PC / reduce RF interference first
 - Confirm your PC's BLE adapter/driver supports the 2M PHY and data-length
