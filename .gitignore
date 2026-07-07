@@ -1,10 +1,59 @@
+# OS / editor junk
+.DS_Store
+.AppleDouble
+.LSOverride
+*.swp
+*.swo
+*~
+
+# Python local environments and caches
+venv/
+.venv/
+env/
+ENV/
+**/venv/
+**/.venv/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+**/.pytest_cache/
+.mypy_cache/
+**/.mypy_cache/
+.ruff_cache/
+**/.ruff_cache/
+.coverage
+htmlcov/
+
+# Local audio captures / test output
+*.wav
+*.flac
+*.raw
+*.pcm
+capture*.wav
+test*.wav
+
+# Zephyr / CMake / Ninja build outputs
 build/
 **/build/
+CMakeCache.txt
+CMakeFiles/
+**/CMakeFiles/
+cmake_install.cmake
+compile_commands.json
+.ninja_*
+**/.ninja_*
+build.ninja
+**/build.ninja
+
+# Firmware / linker / binary artifacts
 *.o
 *.obj
 *.a
 *.so
 *.dylib
+*.dll
 *.elf
 *.hex
 *.bin
@@ -12,14 +61,35 @@ build/
 *.map
 *.lst
 *.sym
-.DS_Store
-CMakeCache.txt
-CMakeFiles/
-cmake_install.cmake
-compile_commands.json
-.ninja_*
-build.ninja
-__pycache__/
-*.py[cod]
-venv/
-.venv/
+*.stat
+*.gcno
+*.gcda
+
+# Zephyr generated config / device-tree files
+.config
+.config.old
+*.config
+*.dts
+*.dtb
+*.pickle
+edt.pickle
+zephyr.dts
+zephyr.dts.pre
+include/generated/
+zephyr/include/generated/
+
+# Host LC3 / codec build artifacts
+pc_client/build-lc3-host/
+pc_client/liblc3.dylib
+pc_client/liblc3.so
+pc_client/liblc3.dll
+pc_client/*.dylib
+pc_client/*.so
+pc_client/*.dll
+
+# Logs and local scratch
+*.log
+logs/
+tmp/
+temp/
+.cache/
