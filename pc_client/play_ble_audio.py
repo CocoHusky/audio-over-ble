@@ -46,7 +46,7 @@ class ResampledPlayer:
 
         if len(self.source) < needed_len:
             missing = needed_len - len(self.source)
-            samples = self.state.pull(max(missing, 256)).astype(np.float32) / 32768.0
+            samples = self.state.pull(max(missing, 160)).astype(np.float32) / 32768.0
             self.source = np.concatenate((self.source, samples))
 
         positions = self.position + step * np.arange(frames, dtype=np.float32)
@@ -82,7 +82,7 @@ async def main_async(args: argparse.Namespace) -> int:
     state.noise_gate_enabled = args.noise_gate
     state.noise_gate_threshold = args.noise_threshold
     state.target_queue_samples = int(SAMPLE_RATE_HZ * args.buffer_ms / 1000)
-    state.max_queue_samples = int(SAMPLE_RATE_HZ * 2.0)
+    state.max_queue_samples = int(SAMPLE_RATE_HZ * max(args.buffer_ms * 3.0, 450.0) / 1000)
 
     output_rate = args.output_rate or default_output_rate()
     player = ResampledPlayer(state, output_rate)
@@ -100,18 +100,18 @@ async def main_async(args: argparse.Namespace) -> int:
             await client.start_notify(AUDIO_CHAR_UUID, state.handle_notification)
             print("Subscribed. Buffering...")
 
-            for _ in range(200):
+            for _ in range(100):
                 if len(state.sample_queue) >= state.target_queue_samples:
                     break
-                await asyncio.sleep(0.02)
+                await asyncio.sleep(0.01)
 
             stream = sd.OutputStream(
                 samplerate=output_rate,
                 channels=1,
                 dtype="float32",
                 callback=audio_callback,
-                blocksize=0,
-                latency="high",
+                blocksize=args.blocksize,
+                latency=args.latency,
             )
             stream.start()
             print(f"Playing to Mac output at {output_rate} Hz. Ctrl+C to stop.")
@@ -121,11 +121,13 @@ async def main_async(args: argparse.Namespace) -> int:
                 await asyncio.sleep(1.0)
                 packet_rate = state.packets_received - last_packets
                 last_packets = state.packets_received
+                queued_ms = 1000.0 * len(state.sample_queue) / SAMPLE_RATE_HZ
                 print(
                     f"\rpackets={state.packets_received} pps={packet_rate} lost={state.packets_lost} "
                     f"bad={state.bad_packets} decode_fail={state.decode_failures} "
-                    f"queued={len(state.sample_queue)} trimmed={state.samples_trimmed} underflows={state.underflows} "
-                    f"rms={state.last_rms:.0f} peak={state.last_peak} out_rms={state.output_rms:.0f}",
+                    f"queued={len(state.sample_queue)}({queued_ms:.0f}ms) trimmed={state.samples_trimmed} "
+                    f"underflows={state.underflows} rms={state.last_rms:.0f} peak={state.last_peak} "
+                    f"out_rms={state.output_rms:.0f}",
                     end="",
                     flush=True,
                 )
@@ -148,7 +150,9 @@ def main() -> int:
     parser.add_argument("--address", default=None)
     parser.add_argument("--scan-seconds", type=float, default=10.0)
     parser.add_argument("--gain", type=float, default=6.0)
-    parser.add_argument("--buffer-ms", type=float, default=350.0)
+    parser.add_argument("--buffer-ms", type=float, default=150.0)
+    parser.add_argument("--latency", default="low", choices=["low", "high"])
+    parser.add_argument("--blocksize", type=int, default=256)
     parser.add_argument("--output-rate", type=int, default=None)
     parser.add_argument("--save", default=None, metavar="FILE.wav")
     parser.add_argument("--agc", action="store_true", help="Enable adaptive gain control.")
