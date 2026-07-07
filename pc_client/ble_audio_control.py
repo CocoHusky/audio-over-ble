@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Small stable desktop control panel for the raw BLE microphone stream."""
+"""Small stable desktop control panel for the LC3 BLE microphone stream."""
 
 from __future__ import annotations
 
@@ -27,8 +27,8 @@ class BleAudioControlApp:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("BLE Mic Monitor")
-        self.root.geometry("760x560")
-        self.root.minsize(660, 480)
+        self.root.geometry("760x590")
+        self.root.minsize(660, 500)
 
         self.state: AudioStreamState | None = None
         self.worker: threading.Thread | None = None
@@ -38,6 +38,7 @@ class BleAudioControlApp:
 
         self.gain = tk.DoubleVar(value=1.0)
         self.muted = tk.BooleanVar(value=False)
+        self.playback_enabled = tk.BooleanVar(value=False)
         self.auto_reconnect = tk.BooleanVar(value=False)
         self.adaptive_buffer_enabled = tk.BooleanVar(value=True)
         self.target_latency_ms = tk.DoubleVar(value=350.0)
@@ -51,7 +52,7 @@ class BleAudioControlApp:
         self.status = tk.StringVar(value="Disconnected")
         self.device = tk.StringVar(value="")
         self.save_label = tk.StringVar(value="Not recording")
-        self.packet_label = tk.StringVar(value="packets=0 lost=0 bad=0")
+        self.packet_label = tk.StringVar(value="packets=0 lost=0 bad=0 decode_fail=0")
         self.queue_label = tk.StringVar(value="queued=0 concealed=0 underflows=0 refills=0")
         self.input_level_label = tk.StringVar(value="input rms=0 peak=0")
         self.output_level_label = tk.StringVar(value="output rms=0 peak=0")
@@ -72,8 +73,12 @@ class BleAudioControlApp:
         ttk.Checkbutton(header, text="Auto reconnect", variable=self.auto_reconnect).pack(side="left", padx=12)
         ttk.Label(header, textvariable=self.status).pack(side="left", padx=12)
 
-        playback = ttk.LabelFrame(outer, text=f"Playback ({SAMPLE_RATE_HZ} Hz stable raw PCM)")
+        playback = ttk.LabelFrame(outer, text=f"Playback / decode monitor ({SAMPLE_RATE_HZ} Hz LC3)")
         playback.pack(fill="x", pady=(14, 0))
+        row = ttk.Frame(playback, padding=(10, 10, 10, 0))
+        row.pack(fill="x")
+        ttk.Checkbutton(row, text="Enable Mac speaker playback", variable=self.playback_enabled).pack(side="left")
+        ttk.Label(row, text="Off by default to avoid macOS CoreAudio/PortAudio crashes").pack(side="left", padx=12)
         self._slider(playback, "Gain", self.gain, 0.0, 20.0, "x")
         row = ttk.Frame(playback, padding=(10, 0, 10, 10))
         row.pack(fill="x")
@@ -192,7 +197,7 @@ class BleAudioControlApp:
         state = self.state
         if state is not None:
             with state.lock:
-                self.packet_label.set(f"packets={state.packets_received} lost={state.packets_lost} bad={state.bad_packets}")
+                self.packet_label.set(f"packets={state.packets_received} lost={state.packets_lost} bad={state.bad_packets} decode_fail={state.decode_failures}")
                 self.queue_label.set(f"queued={len(state.sample_queue)} concealed={state.samples_dropped} underflows={state.underflows} refills={state.buffer_refills}")
                 self.input_level_label.set(f"input rms={state.last_rms:.0f} peak={state.last_peak}")
                 self.output_level_label.set(f"output rms={state.output_rms:.0f} peak={state.output_peak}")
@@ -235,14 +240,13 @@ class BleAudioControlApp:
         state = AudioStreamState(save_path=self.save_path, gain=self.gain.get())
         self.state = state
         self.apply_realtime_controls()
+        stream = None
 
         def audio_callback(outdata, frames, time_info, status):
             del time_info
             if status:
                 self.root.after(0, lambda: self.status.set(str(status)))
             outdata[:, 0] = state.pull(frames)
-
-        stream = sd.OutputStream(samplerate=SAMPLE_RATE_HZ, channels=CHANNELS, dtype="int16", callback=audio_callback, blocksize=PLAYBACK_BLOCKSIZE)
 
         try:
             disconnected = asyncio.Event()
@@ -265,8 +269,23 @@ class BleAudioControlApp:
                 if self.stop_requested.is_set():
                     return
 
-                stream.start()
-                self.root.after(0, lambda: self.status.set("Playing"))
+                if self.playback_enabled.get():
+                    try:
+                        stream = sd.OutputStream(
+                            samplerate=SAMPLE_RATE_HZ,
+                            channels=CHANNELS,
+                            dtype="int16",
+                            callback=audio_callback,
+                            blocksize=PLAYBACK_BLOCKSIZE,
+                            latency="high",
+                        )
+                        stream.start()
+                        self.root.after(0, lambda: self.status.set("Playing"))
+                    except Exception as exc:
+                        stream = None
+                        self.root.after(0, lambda: self.status.set(f"Connected; playback disabled: {exc}"))
+                else:
+                    self.root.after(0, lambda: self.status.set("Connected; decode monitor only"))
 
                 last_packets = -1
                 stalled_ticks = 0
@@ -286,12 +305,12 @@ class BleAudioControlApp:
                     else:
                         stalled_ticks = 0
                         if packets > 0:
-                            self.root.after(0, lambda: self.status.set("Playing"))
+                            if self.playback_enabled.get() and stream is not None:
+                                self.root.after(0, lambda: self.status.set("Playing"))
+                            else:
+                                self.root.after(0, lambda: self.status.set("Receiving LC3 packets"))
                     last_packets = packets
 
-                    # Important: do not disconnect/reconnect just because audio stalls.
-                    # A stall may be a transient notify gap; keeping the BLE link open is
-                    # much more stable than flapping the connection.
                     if stalled_ticks == 20:
                         self.root.after(0, lambda: self.status.set("Connected; waiting for audio packets"))
 
@@ -301,9 +320,13 @@ class BleAudioControlApp:
                     pass
         finally:
             self.connected = False
-            if stream.active:
-                stream.stop()
-            stream.close()
+            if stream is not None:
+                try:
+                    if stream.active:
+                        stream.stop()
+                    stream.close()
+                except Exception:
+                    pass
             state.close()
             if self.stop_requested.is_set() or not self.auto_reconnect.get():
                 self.root.after(0, lambda: self.status.set("Disconnected"))
