@@ -1,0 +1,43 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/CMakeFiles/xiao_ble_mic_stream"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/CMakeFiles/xiao_ble_mic_stream.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/CMakeFiles/xiao_ble_mic_stream-complete.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-build.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-configure.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-download.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-install.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-mkdir.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-patch.rule"
+		},
+		{
+			"file" : "/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"xiao_ble_mic_stream"
+		],
+		"name" : "xiao_ble_mic_stream"
+	}
+}

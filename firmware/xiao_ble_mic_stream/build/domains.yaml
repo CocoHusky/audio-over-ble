@@ -1,0 +1,7 @@
+default: xiao_ble_mic_stream
+build_dir: /Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build
+domains:
+  - name: xiao_ble_mic_stream
+    build_dir: /Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/xiao_ble_mic_stream
+flash_order:
+  - xiao_ble_mic_stream

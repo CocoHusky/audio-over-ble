@@ -1,0 +1,7 @@
+/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/opus.dir
+/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/edit_cache.dir
+/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/rebuild_cache.dir
+/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/list_install_components.dir
+/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/install.dir
+/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/install/local.dir
+/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/install/strip.dir

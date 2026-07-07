@@ -1,0 +1,5 @@
+{
+    "nrf-connect.applications": [
+        "${workspaceFolder}/firmware/xiao_ble_mic_stream"
+    ]
+}

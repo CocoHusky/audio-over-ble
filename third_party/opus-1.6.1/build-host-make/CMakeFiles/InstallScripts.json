@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

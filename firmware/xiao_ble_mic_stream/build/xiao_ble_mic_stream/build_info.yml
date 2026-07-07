@@ -1,0 +1,57 @@
+cmake:
+  application:
+    configuration-dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream'
+    source-dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream'
+  board:
+    name: 'xiao_ble'
+    path:
+     - '/opt/nordic/ncs/v3.3.0/zephyr/boards/seeed/xiao_ble'
+    qualifiers: 'nrf52840/sense'
+    revision: ''
+  devicetree:
+    bindings-dirs:
+     - '/opt/nordic/ncs/v3.3.0/nrf/dts/bindings'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/bindings'
+    files:
+     - '/opt/nordic/ncs/v3.3.0/zephyr/boards/seeed/xiao_ble/xiao_ble_nrf52840_sense.dts'
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/app.overlay'
+    include-dirs:
+     - '/opt/nordic/ncs/v3.3.0/nrf/include'
+     - '/opt/nordic/ncs/v3.3.0/nrf/dts/common'
+     - '/opt/nordic/ncs/v3.3.0/nrf/dts/riscv'
+     - '/opt/nordic/ncs/v3.3.0/nrf/dts/arm'
+     - '/opt/nordic/ncs/v3.3.0/nrf/dts'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/include'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/include/zephyr'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/common'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/vendor'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/rx'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/x86'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/xtensa'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/sparc'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/riscv'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/posix'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/arm64'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/arm'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts/arc'
+     - '/opt/nordic/ncs/v3.3.0/zephyr/dts'
+    user-files:
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/app.overlay'
+  kconfig:
+    files:
+     - '/opt/nordic/ncs/v3.3.0/zephyr/boards/seeed/xiao_ble/xiao_ble_nrf52840_sense_defconfig'
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/prj.conf'
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/xiao_ble_mic_stream/zephyr/misc/generated/extra_kconfig_options.conf'
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/xiao_ble_mic_stream/zephyr/.config.sysbuild'
+    user-files:
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/prj.conf'
+  toolchain:
+    name: 'zephyr'
+    path: '/opt/nordic/ncs/toolchains/0c0f19d91c/opt/zephyr-sdk'
+  vendor-specific:
+    nordic:
+      svdfile: '/opt/nordic/ncs/v3.3.0/modules/hal/nordic/nrfx/bsp/stable/mdk/nrf52840.svd'
+  zephyr:
+    version: '4.3.99'
+    zephyr-base: '/opt/nordic/ncs/v3.3.0/zephyr'
+version: '0.1.0'

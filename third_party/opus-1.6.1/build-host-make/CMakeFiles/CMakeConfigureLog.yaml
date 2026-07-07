@@ -1,0 +1,2215 @@
+
+---
+events:
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/FindGit.cmake:111 (find_program)"
+      - "cmake/OpusPackageVersion.cmake:8 (find_package)"
+      - "CMakeLists.txt:5 (get_package_version)"
+    mode: "program"
+    variable: "GIT_EXECUTABLE"
+    description: "Git command line client"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "git"
+    candidate_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/git"
+      - "/usr/local/bin/git"
+      - "/System/Cryptexes/App/usr/bin/git"
+    found: "/usr/bin/git"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineSystem.cmake:12 (find_program)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_UNAME"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "uname"
+    candidate_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/uname"
+      - "/usr/local/bin/uname"
+      - "/System/Cryptexes/App/usr/bin/uname"
+    found: "/usr/bin/uname"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineSystem.cmake:212 (message)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      The system is: Darwin - 24.6.0 - x86_64
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeUnixFindMake.cmake:5 (find_program)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_MAKE_PROGRAM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "gmake"
+      - "make"
+      - "smake"
+    candidate_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/gmake"
+      - "/usr/local/bin/gmake"
+      - "/System/Cryptexes/App/usr/bin/gmake"
+      - "/usr/bin/gmake"
+      - "/bin/gmake"
+      - "/usr/sbin/gmake"
+      - "/sbin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/gmake"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/gmake"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/gmake"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/gmake"
+      - "/Applications/Codex.app/Contents/Resources/gmake"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/make"
+      - "/usr/local/bin/make"
+      - "/System/Cryptexes/App/usr/bin/make"
+    found: "/usr/bin/make"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompiler.cmake:73 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:64 (_cmake_find_compiler)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_C_COMPILER"
+    description: "C compiler"
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "cc"
+      - "gcc"
+      - "cl"
+      - "bcc"
+      - "xlc"
+      - "icx"
+      - "clang"
+    candidate_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/cc"
+      - "/usr/local/bin/cc"
+      - "/System/Cryptexes/App/usr/bin/cc"
+    found: "/usr/bin/cc"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerId.cmake:462 (find_file)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerId.cmake:500 (CMAKE_DETERMINE_COMPILER_ID_WRITE)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerId.cmake:8 (CMAKE_DETERMINE_COMPILER_ID_BUILD)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "file"
+    variable: "src_in"
+    description: "Path to a file."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "CMakeCCompilerId.c.in"
+    candidate_directories:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/"
+      - "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake/"
+    found: "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeCCompilerId.c.in"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler: /usr/bin/cc 
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "a.out"
+      
+      The C compiler identification is AppleClang, found in:
+        /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/4.2.1/CompilerIdC/a.out
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerId.cmake:290 (message)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:122 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Detecting C compiler apple sysroot: "/usr/bin/cc" "-E" "apple-sdk.c"
+        # 1 "apple-sdk.c"
+        # 1 "<built-in>" 1
+        # 1 "<built-in>" 3
+        # 433 "<built-in>" 3
+        # 1 "<command line>" 1
+        # 1 "<built-in>" 2
+        # 1 "apple-sdk.c" 2
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 1 3 4
+        # 89 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 90 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/TargetConditionals.h" 1 3 4
+        # 91 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 207 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 1 3 4
+        # 196 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 197 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 33 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityVersions.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 2 3 4
+        # 198 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 1 3 4
+        # 34 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 3 4
+        # 1 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternal.h" 1 3 4
+        # 35 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityInternalLegacy.h" 2 3 4
+        # 199 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/Availability.h" 2 3 4
+        # 208 "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/AvailabilityMacros.h" 2 3 4
+        # 2 "apple-sdk.c" 2
+        
+        
+      Found apple sysroot: /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_AR"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ar"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    found: "/usr/bin/ar"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_RANLIB"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ranlib"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    found: "/usr/bin/ranlib"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_STRIP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "strip"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    found: "/usr/bin/strip"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_LINKER"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "ld"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    found: "/usr/bin/ld"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_NM"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "nm"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    found: "/usr/bin/nm"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJDUMP"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objdump"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    found: "/usr/bin/objdump"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_OBJCOPY"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "objcopy"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/usr/bin/objcopy"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/objcopy"
+      - "/usr/local/bin/objcopy"
+      - "/System/Cryptexes/App/usr/bin/objcopy"
+      - "/bin/objcopy"
+      - "/usr/sbin/objcopy"
+      - "/sbin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/objcopy"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/objcopy"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/objcopy"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/objcopy"
+      - "/Applications/Codex.app/Contents/Resources/objcopy"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_READELF"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "readelf"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/usr/bin/readelf"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/readelf"
+      - "/usr/local/bin/readelf"
+      - "/System/Cryptexes/App/usr/bin/readelf"
+      - "/bin/readelf"
+      - "/usr/sbin/readelf"
+      - "/sbin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/readelf"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/readelf"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/readelf"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/readelf"
+      - "/Applications/Codex.app/Contents/Resources/readelf"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_DLLTOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "dlltool"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/usr/bin/dlltool"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/dlltool"
+      - "/usr/local/bin/dlltool"
+      - "/System/Cryptexes/App/usr/bin/dlltool"
+      - "/bin/dlltool"
+      - "/usr/sbin/dlltool"
+      - "/sbin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/dlltool"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/dlltool"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/dlltool"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/dlltool"
+      - "/Applications/Codex.app/Contents/Resources/dlltool"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_ADDR2LINE"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "addr2line"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/usr/bin/addr2line"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/addr2line"
+      - "/usr/local/bin/addr2line"
+      - "/System/Cryptexes/App/usr/bin/addr2line"
+      - "/bin/addr2line"
+      - "/usr/sbin/addr2line"
+      - "/sbin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/addr2line"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/addr2line"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/addr2line"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/addr2line"
+      - "/Applications/Codex.app/Contents/Resources/addr2line"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeFindBinUtils.cmake:243 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCCompiler.cmake:200 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_TAPI"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: false
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: false
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "tapi"
+    candidate_directories:
+      - "/usr/bin/"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/usr/bin/tapi"
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/tapi"
+      - "/usr/local/bin/tapi"
+      - "/System/Cryptexes/App/usr/bin/tapi"
+      - "/bin/tapi"
+      - "/usr/sbin/tapi"
+      - "/sbin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/tapi"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/tapi"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/tapi"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/tapi"
+      - "/Applications/Codex.app/Contents/Resources/tapi"
+    found: false
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+  -
+    kind: "find-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Platform/Darwin.cmake:76 (find_program)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeSystemSpecificInformation.cmake:32 (include)"
+      - "CMakeLists.txt:7 (project)"
+    mode: "program"
+    variable: "CMAKE_INSTALL_NAME_TOOL"
+    description: "Path to a program."
+    settings:
+      SearchFramework: "FIRST"
+      SearchAppBundle: "FIRST"
+      CMAKE_FIND_USE_CMAKE_PATH: true
+      CMAKE_FIND_USE_CMAKE_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH: true
+      CMAKE_FIND_USE_CMAKE_SYSTEM_PATH: true
+      CMAKE_FIND_USE_INSTALL_PREFIX: true
+    names:
+      - "install_name_tool"
+    candidate_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/"
+      - "/usr/local/bin/"
+      - "/System/Cryptexes/App/usr/bin/"
+      - "/usr/bin/"
+      - "/bin/"
+      - "/usr/sbin/"
+      - "/sbin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin/"
+      - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin/"
+      - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR/"
+      - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/"
+      - "/Applications/Codex.app/Contents/Resources/"
+    searched_directories:
+      - "/Library/Frameworks/Python.framework/Versions/3.14/bin/install_name_tool"
+      - "/usr/local/bin/install_name_tool"
+      - "/System/Cryptexes/App/usr/bin/install_name_tool"
+    found: "/usr/bin/install_name_tool"
+    search_context:
+      ENV{PATH}:
+        - "/Library/Frameworks/Python.framework/Versions/3.14/bin"
+        - "/usr/local/bin"
+        - "/System/Cryptexes/App/usr/bin"
+        - "/usr/bin"
+        - "/bin"
+        - "/usr/sbin"
+        - "/sbin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin"
+        - "/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin"
+        - "/Users/alexburton/.codex/tmp/arg0/codex-arg0nLVVUR"
+        - "/Users/alexburton/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin"
+        - "/Applications/Codex.app/Contents/Resources"
+      CMAKE_INSTALL_PREFIX: "/usr/local"
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:83 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_09fbb/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_09fbb.dir/build.make CMakeFiles/cmTC_09fbb.dir/build
+        Building C object CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o
+        /usr/bin/cc   -v -Wl,-v -MD -MT CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -c /opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeCCompilerABI.c
+        Apple clang version 17.0.0 (clang-1700.6.4.2)
+        Target: x86_64-apple-darwin24.6.0
+        Thread model: posix
+        InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+        clang: warning: -Wl,-v: 'linker' input unused [-Wunused-command-line-argument]
+         "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple x86_64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=2 -target-sdk-version=26.2 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu penryn -tune-cpu generic -debugger-tuning=lldb -fdebug-compilation-dir=/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5 -target-linker-version 1230.1 -v -fcoverage-compilation-dir=/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5 -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -internal-iframework /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks -internal-iframework /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks -internal-iframework /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -x c /opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeCCompilerABI.c
+        clang -cc1 version 17.0.0 (clang-1700.6.4.2) default target x86_64-apple-darwin24.6.0
+        ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"
+        ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"
+        #include "..." search starts here:
+        #include <...> search starts here:
+         /usr/local/include
+         /Library/Developer/CommandLineTools/usr/lib/clang/17/include
+         /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include
+         /Library/Developer/CommandLineTools/usr/include
+         /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
+         /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks (framework directory)
+        End of search list.
+        Linking C executable cmTC_09fbb
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_09fbb.dir/link.txt --verbose=1
+        Apple clang version 17.0.0 (clang-1700.6.4.2)
+        Target: x86_64-apple-darwin24.6.0
+        Thread model: posix
+        InstalledDir: /Library/Developer/CommandLineTools/usr/bin
+         "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch x86_64 -platform_version macos 15.0.0 26.2 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_09fbb -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a
+        @(#)PROGRAM:ld PROJECT:ld-1230.1
+        BUILD 10:12:58 Jan  9 2026
+        configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em armv8m.main armv8.1m.main
+        will use ld-classic for: armv6 armv7 armv7s i386 armv6m armv7k armv7m armv7em
+        LTO support using: LLVM version 17.0.0 (static support for 29, runtime is 29)
+        TAPI support using: Apple TAPI version 17.0.0 (tapi-1700.3.8)
+        Library search paths:
+        	/usr/local/lib
+        	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib
+        	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift
+        Framework search paths:
+        	/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names  -v -Wl,-v CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -o cmTC_09fbb
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:122 (message)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Effective list of requested architectures (possibly empty)  : ""
+      Effective list of architectures found in the ABI info binary: "x86_64"
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:217 (message)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Parsed C implicit include dir info: rv=done
+        found start of include info
+        found start of implicit include info
+          add: [/usr/local/include]
+          add: [/Library/Developer/CommandLineTools/usr/lib/clang/17/include]
+          add: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+          add: [/Library/Developer/CommandLineTools/usr/include]
+        end of search list found
+        collapse include dir [/usr/local/include] ==> [/usr/local/include]
+        collapse include dir [/Library/Developer/CommandLineTools/usr/lib/clang/17/include] ==> [/Library/Developer/CommandLineTools/usr/lib/clang/17/include]
+        collapse include dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+        collapse include dir [/Library/Developer/CommandLineTools/usr/include] ==> [/Library/Developer/CommandLineTools/usr/include]
+        implicit include dirs: [/usr/local/include;/Library/Developer/CommandLineTools/usr/lib/clang/17/include;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include;/Library/Developer/CommandLineTools/usr/include]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:253 (message)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|"|[0-9]+>[ 	-]*Build:[ 	0-9]+ ms[ 	]*)?[ 	]*(([^"]*[/\\])?(ld[0-9]*(|\\.[a-rt-z][a-z]*|\\.s[a-np-z][a-z]*|\\.so[a-z]+)))("|,| |$)]
+        ignore line: [Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5']
+        ignore line: []
+        ignore line: [Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_09fbb/fast]
+        ignore line: [/Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_09fbb.dir/build.make CMakeFiles/cmTC_09fbb.dir/build]
+        ignore line: [Building C object CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o]
+        ignore line: [/usr/bin/cc   -v -Wl -v -MD -MT CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -MF CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o.d -o CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -c /opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [Apple clang version 17.0.0 (clang-1700.6.4.2)]
+        ignore line: [Target: x86_64-apple-darwin24.6.0]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
+        ignore line: [clang: warning: -Wl -v: 'linker' input unused [-Wunused-command-line-argument]]
+        ignore line: [ "/Library/Developer/CommandLineTools/usr/bin/clang" -cc1 -triple x86_64-apple-macosx15.0.0 -Wundef-prefix=TARGET_OS_ -Wdeprecated-objc-isa-usage -Werror=deprecated-objc-isa-usage -Werror=implicit-function-declaration -emit-obj -disable-free -clear-ast-before-backend -disable-llvm-verifier -discard-value-names -main-file-name CMakeCCompilerABI.c -mrelocation-model pic -pic-level 2 -mframe-pointer=all -fno-strict-return -ffp-contract=on -fno-rounding-math -funwind-tables=2 -target-sdk-version=26.2 -fvisibility-inlines-hidden-static-local-var -fdefine-target-os-macros -fno-assume-unique-vtables -fno-modulemap-allow-subdirectory-search -target-cpu penryn -tune-cpu generic -debugger-tuning=lldb -fdebug-compilation-dir=/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5 -target-linker-version 1230.1 -v -fcoverage-compilation-dir=/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-BzfYV5 -resource-dir /Library/Developer/CommandLineTools/usr/lib/clang/17 -dependency-file CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o.d -skip-unused-modulemap-deps -MT CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -sys-header-deps -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -I/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include -internal-isystem /Library/Developer/CommandLineTools/usr/lib/clang/17/include -internal-externc-isystem /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -internal-externc-isystem /Library/Developer/CommandLineTools/usr/include -internal-iframework /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks -internal-iframework /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks -internal-iframework /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks -Wno-reorder-init-list -Wno-implicit-int-float-conversion -Wno-c99-designator -Wno-final-dtor-non-final-class -Wno-extra-semi-stmt -Wno-misleading-indentation -Wno-quoted-include-in-framework-header -Wno-implicit-fallthrough -Wno-enum-enum-conversion -Wno-enum-float-conversion -Wno-elaborated-enum-base -ferror-limit 19 -stack-protector 1 -fstack-check -mdarwin-stkchk-strong-link -fblocks -fencode-extended-block-signature -fregister-global-dtors-with-atexit -fgnuc-version=4.2.1 -fskip-odr-check-in-gmf -fmax-type-align=16 -fcommon -clang-vendor-feature=+disableNonDependentMemberExprInCurrentInstantiation -fno-odr-hash-protocols -clang-vendor-feature=+enableAggressiveVLAFolding -clang-vendor-feature=+revert09abecef7bbf -clang-vendor-feature=+thisNoAlignAttr -clang-vendor-feature=+thisNoNullAttr -clang-vendor-feature=+disableAtImportPrivateFrameworkInImplementationError -D__GCC_HAVE_DWARF2_CFI_ASM=1 -o CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -x c /opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeCCompilerABI.c]
+        ignore line: [clang -cc1 version 17.0.0 (clang-1700.6.4.2) default target x86_64-apple-darwin24.6.0]
+        ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/local/include"]
+        ignore line: [ignoring nonexistent directory "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/Library/Frameworks"]
+        ignore line: [#include "..." search starts here:]
+        ignore line: [#include <...> search starts here:]
+        ignore line: [ /usr/local/include]
+        ignore line: [ /Library/Developer/CommandLineTools/usr/lib/clang/17/include]
+        ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include]
+        ignore line: [ /Library/Developer/CommandLineTools/usr/include]
+        ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)]
+        ignore line: [ /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/SubFrameworks (framework directory)]
+        ignore line: [End of search list.]
+        ignore line: [Linking C executable cmTC_09fbb]
+        ignore line: [/opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_09fbb.dir/link.txt --verbose=1]
+        ignore line: [Apple clang version 17.0.0 (clang-1700.6.4.2)]
+        ignore line: [Target: x86_64-apple-darwin24.6.0]
+        ignore line: [Thread model: posix]
+        ignore line: [InstalledDir: /Library/Developer/CommandLineTools/usr/bin]
+        link line: [ "/Library/Developer/CommandLineTools/usr/bin/ld" -demangle -lto_library /Library/Developer/CommandLineTools/usr/lib/libLTO.dylib -dynamic -arch x86_64 -platform_version macos 15.0.0 26.2 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -mllvm -enable-linkonceodr-outlining -o cmTC_09fbb -L/usr/local/lib -search_paths_first -headerpad_max_install_names -v CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o -lSystem /Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+          arg [/Library/Developer/CommandLineTools/usr/bin/ld] ==> ignore
+          arg [-demangle] ==> ignore
+          arg [-lto_library] ==> ignore, skip following value
+          arg [/Library/Developer/CommandLineTools/usr/lib/libLTO.dylib] ==> skip value of -lto_library
+          arg [-dynamic] ==> ignore
+          arg [-arch] ==> ignore
+          arg [x86_64] ==> ignore
+          arg [-platform_version] ==> ignore
+          arg [macos] ==> ignore
+          arg [15.0.0] ==> ignore
+          arg [26.2] ==> ignore
+          arg [-syslibroot] ==> ignore
+          arg [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk] ==> ignore
+          arg [-mllvm] ==> ignore
+          arg [-enable-linkonceodr-outlining] ==> ignore
+          arg [-o] ==> ignore
+          arg [cmTC_09fbb] ==> ignore
+          arg [-L/usr/local/lib] ==> dir [/usr/local/lib]
+          arg [-search_paths_first] ==> ignore
+          arg [-headerpad_max_install_names] ==> ignore
+          arg [-v] ==> ignore
+          arg [CMakeFiles/cmTC_09fbb.dir/CMakeCCompilerABI.c.o] ==> ignore
+          arg [-lSystem] ==> lib [System]
+          arg [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a] ==> lib [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        linker tool for 'C': /Library/Developer/CommandLineTools/usr/bin/ld
+        Library search paths: [;/usr/local/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift]
+        Framework search paths: [;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+        remove lib [System]
+        remove lib [/Library/Developer/CommandLineTools/usr/lib/clang/17/lib/darwin/libclang_rt.osx.a]
+        collapse library dir [/usr/local/lib] ==> [/usr/local/lib]
+        collapse library dir [/usr/local/lib] ==> [/usr/local/lib]
+        collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib]
+        collapse library dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift]
+        collapse framework dir [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks] ==> [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: [/usr/local/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib;/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/swift]
+        implicit fwks: [/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks]
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CMakeDetermineLinkerId.cmake:38 (message)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeDetermineCompilerABI.cmake:299 (cmake_determine_linker_id)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:7 (project)"
+    message: |
+      Running the C compiler's linker: "/Library/Developer/CommandLineTools/usr/bin/ld" "-v"
+      @(#)PROGRAM:ld PROJECT:ld-1230.1
+      BUILD 10:12:58 Jan  9 2026
+      configured to support archs: armv6 armv7 armv7s arm64 arm64e arm64_32 i386 x86_64 x86_64h armv6m armv7k armv7m armv7em armv8m.main armv8.1m.main
+      will use ld-classic for: armv6 armv7 armv7s i386 armv6m armv7k armv7m armv7em
+      LTO support using: LLVM version 17.0.0 (static support for 29, runtime is 29)
+      TAPI support using: Apple TAPI version 17.0.0 (tapi-1700.3.8)
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/CFeatureCheck.cmake:30 (try_compile)"
+      - "cmake/OpusConfig.cmake:27 (c_feature_check)"
+      - "CMakeLists.txt:11 (include)"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "COMPILE_VLA_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b3c5d/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b3c5d.dir/build.make CMakeFiles/cmTC_b3c5d.dir/build
+        Building C object CMakeFiles/cmTC_b3c5d.dir/vla.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_b3c5d.dir/vla.c.o -MF CMakeFiles/cmTC_b3c5d.dir/vla.c.o.d -o CMakeFiles/cmTC_b3c5d.dir/vla.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake/vla.c
+        Linking C executable cmTC_b3c5d
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b3c5d.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_b3c5d.dir/vla.c.o -o cmTC_b3c5d
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "cmake/OpusConfig.cmake:30 (check_include_file)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for alloca.h"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-mDMjhj"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-mDMjhj"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_ALLOCA_H"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-mDMjhj'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_89efe/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_89efe.dir/build.make CMakeFiles/cmTC_89efe.dir/build
+        Building C object CMakeFiles/cmTC_89efe.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_89efe.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_89efe.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_89efe.dir/CheckIncludeFile.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-mDMjhj/CheckIncludeFile.c
+        Linking C executable cmTC_89efe
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_89efe.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_89efe.dir/CheckIncludeFile.c.o -o cmTC_89efe
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:193 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:98 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "cmake/OpusConfig.cmake:35 (check_symbol_exists)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for alloca"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-NcmMrv"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-NcmMrv"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "USE_ALLOCA_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-NcmMrv'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_19c2e/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_19c2e.dir/build.make CMakeFiles/cmTC_19c2e.dir/build
+        Building C object CMakeFiles/cmTC_19c2e.dir/CheckSymbolExists.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_19c2e.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_19c2e.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_19c2e.dir/CheckSymbolExists.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-NcmMrv/CheckSymbolExists.c
+        Linking C executable cmTC_19c2e
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_19c2e.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_19c2e.dir/CheckSymbolExists.c.o -o cmTC_19c2e
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckLibraryExists.cmake:154 (try_compile)"
+      - "cmake/OpusConfig.cmake:43 (check_library_exists)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for floor in m"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-YfWXaQ"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-YfWXaQ"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_LIBM"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-YfWXaQ'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_3d7eb/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_3d7eb.dir/build.make CMakeFiles/cmTC_3d7eb.dir/build
+        Building C object CMakeFiles/cmTC_3d7eb.dir/CheckFunctionExists.c.o
+        /usr/bin/cc   -DCHECK_FUNCTION_EXISTS=floor -std=gnu99 -MD -MT CMakeFiles/cmTC_3d7eb.dir/CheckFunctionExists.c.o -MF CMakeFiles/cmTC_3d7eb.dir/CheckFunctionExists.c.o.d -o CMakeFiles/cmTC_3d7eb.dir/CheckFunctionExists.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-YfWXaQ/CheckFunctionExists.c
+        /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-YfWXaQ/CheckFunctionExists.c:7:3: warning: incompatible redeclaration of library function 'floor' [-Wincompatible-library-redeclaration]
+            7 |   CHECK_FUNCTION_EXISTS(void);
+              |   ^
+        <command line>:1:31: note: expanded from macro 'CHECK_FUNCTION_EXISTS'
+            1 | #define CHECK_FUNCTION_EXISTS floor
+              |                               ^
+        /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-YfWXaQ/CheckFunctionExists.c:7:3: note: 'floor' is a builtin with type 'double (double)'
+        <command line>:1:31: note: expanded from macro 'CHECK_FUNCTION_EXISTS'
+            1 | #define CHECK_FUNCTION_EXISTS floor
+              |                               ^
+        1 warning generated.
+        Linking C executable cmTC_3d7eb
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3d7eb.dir/link.txt --verbose=1
+        /usr/bin/cc  -DCHECK_FUNCTION_EXISTS=floor -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_3d7eb.dir/CheckFunctionExists.c.o -o cmTC_3d7eb  -lm
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:193 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:98 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "cmake/OpusConfig.cmake:49 (check_symbol_exists)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for lrintf"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9QPJ7g"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9QPJ7g"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_LRINTF"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9QPJ7g'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_ba9ad/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_ba9ad.dir/build.make CMakeFiles/cmTC_ba9ad.dir/build
+        Building C object CMakeFiles/cmTC_ba9ad.dir/CheckSymbolExists.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_ba9ad.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_ba9ad.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_ba9ad.dir/CheckSymbolExists.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9QPJ7g/CheckSymbolExists.c
+        Linking C executable cmTC_ba9ad
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ba9ad.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_ba9ad.dir/CheckSymbolExists.c.o -o cmTC_ba9ad  -lm
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:193 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:98 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "cmake/OpusConfig.cmake:50 (check_symbol_exists)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for lrint"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-IHJn1q"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-IHJn1q"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_LRINT"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-IHJn1q'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_43b8b/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_43b8b.dir/build.make CMakeFiles/cmTC_43b8b.dir/build
+        Building C object CMakeFiles/cmTC_43b8b.dir/CheckSymbolExists.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_43b8b.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_43b8b.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_43b8b.dir/CheckSymbolExists.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-IHJn1q/CheckSymbolExists.c
+        Linking C executable cmTC_43b8b
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_43b8b.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_43b8b.dir/CheckSymbolExists.c.o -o cmTC_43b8b  -lm
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:193 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckSymbolExists.cmake:98 (__CHECK_SYMBOL_EXISTS_IMPL)"
+      - "cmake/OpusConfig.cmake:51 (check_symbol_exists)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for elf_aux_info"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-o8duKc"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-o8duKc"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_ELF_AUX_INFO"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-o8duKc'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_8a4a3/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_8a4a3.dir/build.make CMakeFiles/cmTC_8a4a3.dir/build
+        Building C object CMakeFiles/cmTC_8a4a3.dir/CheckSymbolExists.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_8a4a3.dir/CheckSymbolExists.c.o -MF CMakeFiles/cmTC_8a4a3.dir/CheckSymbolExists.c.o.d -o CMakeFiles/cmTC_8a4a3.dir/CheckSymbolExists.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-o8duKc/CheckSymbolExists.c
+        /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-o8duKc/CheckSymbolExists.c:2:10: fatal error: 'sys/auxv.h' file not found
+            2 | #include <sys/auxv.h>
+              |          ^~~~~~~~~~~~
+        1 error generated.
+        make[1]: *** [CMakeFiles/cmTC_8a4a3.dir/CheckSymbolExists.c.o] Error 1
+        make: *** [cmTC_8a4a3/fast] Error 2
+        
+      exitCode: 2
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/CFeatureCheck.cmake:30 (try_compile)"
+      - "cmake/OpusFunctions.cmake:157 (c_feature_check)"
+      - "cmake/OpusConfig.cmake:65 (opus_supports_cpu_detection)"
+      - "CMakeLists.txt:11 (include)"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "COMPILE_CPU_INFO_BY_ASM_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_b9562/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_b9562.dir/build.make CMakeFiles/cmTC_b9562.dir/build
+        Building C object CMakeFiles/cmTC_b9562.dir/cpu_info_by_asm.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_b9562.dir/cpu_info_by_asm.c.o -MF CMakeFiles/cmTC_b9562.dir/cpu_info_by_asm.c.o.d -o CMakeFiles/cmTC_b9562.dir/cpu_info_by_asm.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake/cpu_info_by_asm.c
+        Linking C executable cmTC_b9562
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b9562.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_b9562.dir/cpu_info_by_asm.c.o -o cmTC_b9562
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "cmake/OpusFunctions.cmake:159 (check_include_file)"
+      - "cmake/OpusConfig.cmake:65 (opus_supports_cpu_detection)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for cpuid.h"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ayDJKu"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ayDJKu"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_CPUID_H"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ayDJKu'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_f82ce/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_f82ce.dir/build.make CMakeFiles/cmTC_f82ce.dir/build
+        Building C object CMakeFiles/cmTC_f82ce.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_f82ce.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_f82ce.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_f82ce.dir/CheckIncludeFile.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ayDJKu/CheckIncludeFile.c
+        Linking C executable cmTC_f82ce
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f82ce.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_f82ce.dir/CheckIncludeFile.c.o -o cmTC_f82ce
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "cmake/CFeatureCheck.cmake:30 (try_compile)"
+      - "cmake/OpusFunctions.cmake:161 (c_feature_check)"
+      - "cmake/OpusConfig.cmake:65 (opus_supports_cpu_detection)"
+      - "CMakeLists.txt:11 (include)"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "COMPILE_CPU_INFO_BY_C_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeTmp'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7c4c7/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_7c4c7.dir/build.make CMakeFiles/cmTC_7c4c7.dir/build
+        Building C object CMakeFiles/cmTC_7c4c7.dir/cpu_info_by_c.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_7c4c7.dir/cpu_info_by_c.c.o -MF CMakeFiles/cmTC_7c4c7.dir/cpu_info_by_c.c.o.d -o CMakeFiles/cmTC_7c4c7.dir/cpu_info_by_c.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake/cpu_info_by_c.c
+        Linking C executable cmTC_7c4c7
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7c4c7.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_7c4c7.dir/cpu_info_by_c.c.o -o cmTC_7c4c7
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "cmake/OpusFunctions.cmake:58 (check_include_file)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for xmmintrin.h"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-7oQRj6"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-7oQRj6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_XMMINTRIN_H"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-7oQRj6'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_10573/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_10573.dir/build.make CMakeFiles/cmTC_10573.dir/build
+        Building C object CMakeFiles/cmTC_10573.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_10573.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_10573.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_10573.dir/CheckIncludeFile.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-7oQRj6/CheckIncludeFile.c
+        Linking C executable cmTC_10573
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_10573.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_10573.dir/CheckIncludeFile.c.o -o cmTC_10573
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:46 (check_c_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:70 (check_flag)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test SSE1_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-E66oFl"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-E66oFl"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "SSE1_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-E66oFl'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_89964/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_89964.dir/build.make CMakeFiles/cmTC_89964.dir/build
+        Building C object CMakeFiles/cmTC_89964.dir/src.c.o
+        /usr/bin/cc -DSSE1_SUPPORTED  -std=gnu99   -msse -MD -MT CMakeFiles/cmTC_89964.dir/src.c.o -MF CMakeFiles/cmTC_89964.dir/src.c.o.d -o CMakeFiles/cmTC_89964.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-E66oFl/src.c
+        Linking C executable cmTC_89964
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_89964.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_89964.dir/src.c.o -o cmTC_89964
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "cmake/OpusFunctions.cmake:78 (check_include_file)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for emmintrin.h"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-gEEIYx"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-gEEIYx"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_EMMINTRIN_H"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-gEEIYx'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_ee6e1/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_ee6e1.dir/build.make CMakeFiles/cmTC_ee6e1.dir/build
+        Building C object CMakeFiles/cmTC_ee6e1.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_ee6e1.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_ee6e1.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_ee6e1.dir/CheckIncludeFile.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-gEEIYx/CheckIncludeFile.c
+        Linking C executable cmTC_ee6e1
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_ee6e1.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_ee6e1.dir/CheckIncludeFile.c.o -o cmTC_ee6e1
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:46 (check_c_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:89 (check_flag)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test SSE2_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqUoUL"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqUoUL"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "SSE2_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqUoUL'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_00525/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_00525.dir/build.make CMakeFiles/cmTC_00525.dir/build
+        Building C object CMakeFiles/cmTC_00525.dir/src.c.o
+        /usr/bin/cc -DSSE2_SUPPORTED  -std=gnu99   -msse2 -MD -MT CMakeFiles/cmTC_00525.dir/src.c.o -MF CMakeFiles/cmTC_00525.dir/src.c.o.d -o CMakeFiles/cmTC_00525.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqUoUL/src.c
+        Linking C executable cmTC_00525
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_00525.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_00525.dir/src.c.o -o cmTC_00525
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "cmake/OpusFunctions.cmake:97 (check_include_file)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for smmintrin.h"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-X3rBYT"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-X3rBYT"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_SMMINTRIN_H"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-X3rBYT'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_c669b/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_c669b.dir/build.make CMakeFiles/cmTC_c669b.dir/build
+        Building C object CMakeFiles/cmTC_c669b.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_c669b.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_c669b.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_c669b.dir/CheckIncludeFile.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-X3rBYT/CheckIncludeFile.c
+        Linking C executable cmTC_c669b
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c669b.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_c669b.dir/CheckIncludeFile.c.o -o cmTC_c669b
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:46 (check_c_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:108 (check_flag)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test SSE4_1_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HPQBRy"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HPQBRy"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "SSE4_1_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HPQBRy'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_fba12/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_fba12.dir/build.make CMakeFiles/cmTC_fba12.dir/build
+        Building C object CMakeFiles/cmTC_fba12.dir/src.c.o
+        /usr/bin/cc -DSSE4_1_SUPPORTED  -std=gnu99   -msse4.1 -MD -MT CMakeFiles/cmTC_fba12.dir/src.c.o -MF CMakeFiles/cmTC_fba12.dir/src.c.o.d -o CMakeFiles/cmTC_fba12.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HPQBRy/src.c
+        Linking C executable cmTC_fba12
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_fba12.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_fba12.dir/src.c.o -o cmTC_fba12
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckIncludeFile.cmake:174 (try_compile)"
+      - "cmake/OpusFunctions.cmake:116 (check_include_file)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Looking for immintrin.h"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ARTcXO"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ARTcXO"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HAVE_IMMINTRIN_H"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ARTcXO'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_3580f/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_3580f.dir/build.make CMakeFiles/cmTC_3580f.dir/build
+        Building C object CMakeFiles/cmTC_3580f.dir/CheckIncludeFile.c.o
+        /usr/bin/cc   -std=gnu99 -MD -MT CMakeFiles/cmTC_3580f.dir/CheckIncludeFile.c.o -MF CMakeFiles/cmTC_3580f.dir/CheckIncludeFile.c.o.d -o CMakeFiles/cmTC_3580f.dir/CheckIncludeFile.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-ARTcXO/CheckIncludeFile.c
+        Linking C executable cmTC_3580f
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_3580f.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_3580f.dir/CheckIncludeFile.c.o -o cmTC_3580f
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:46 (check_c_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:121 (check_flag)"
+      - "cmake/OpusConfig.cmake:69 (opus_detect_sse)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test AVX2_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-vo6TiV"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-vo6TiV"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "AVX2_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-vo6TiV'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_54989/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_54989.dir/build.make CMakeFiles/cmTC_54989.dir/build
+        Building C object CMakeFiles/cmTC_54989.dir/src.c.o
+        /usr/bin/cc -DAVX2_SUPPORTED  -std=gnu99   -mavx2 -MD -MT CMakeFiles/cmTC_54989.dir/src.c.o -MF CMakeFiles/cmTC_54989.dir/src.c.o.d -o CMakeFiles/cmTC_54989.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-vo6TiV/src.c
+        Linking C executable cmTC_54989
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_54989.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_54989.dir/src.c.o -o cmTC_54989
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:46 (check_c_compiler_flag)"
+      - "cmake/OpusConfig.cmake:89 (check_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test FAST_MATH_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-34cF45"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-34cF45"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "FAST_MATH_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-34cF45'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_bff79/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_bff79.dir/build.make CMakeFiles/cmTC_bff79.dir/build
+        Building C object CMakeFiles/cmTC_bff79.dir/src.c.o
+        /usr/bin/cc -DFAST_MATH_SUPPORTED  -std=gnu99   -ffast-math -MD -MT CMakeFiles/cmTC_bff79.dir/src.c.o -MF CMakeFiles/cmTC_bff79.dir/src.c.o.d -o CMakeFiles/cmTC_bff79.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-34cF45/src.c
+        Linking C executable cmTC_bff79
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bff79.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_bff79.dir/src.c.o -o cmTC_bff79
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:46 (check_c_compiler_flag)"
+      - "cmake/OpusConfig.cmake:90 (check_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test STACK_PROTECTOR_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-Vr9JuD"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-Vr9JuD"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "STACK_PROTECTOR_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-Vr9JuD'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_72cb6/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_72cb6.dir/build.make CMakeFiles/cmTC_72cb6.dir/build
+        Building C object CMakeFiles/cmTC_72cb6.dir/src.c.o
+        /usr/bin/cc -DSTACK_PROTECTOR_SUPPORTED  -std=gnu99   -fstack-protector-strong -MD -MT CMakeFiles/cmTC_72cb6.dir/src.c.o -MF CMakeFiles/cmTC_72cb6.dir/src.c.o.d -o CMakeFiles/cmTC_72cb6.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-Vr9JuD/src.c
+        Linking C executable cmTC_72cb6
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_72cb6.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_72cb6.dir/src.c.o -o cmTC_72cb6
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusFunctions.cmake:46 (check_c_compiler_flag)"
+      - "cmake/OpusConfig.cmake:91 (check_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test HIDDEN_VISIBILITY_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-eGo2P7"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-eGo2P7"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "HIDDEN_VISIBILITY_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-eGo2P7'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_bec4a/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_bec4a.dir/build.make CMakeFiles/cmTC_bec4a.dir/build
+        Building C object CMakeFiles/cmTC_bec4a.dir/src.c.o
+        /usr/bin/cc -DHIDDEN_VISIBILITY_SUPPORTED  -std=gnu99   -fvisibility=hidden -MD -MT CMakeFiles/cmTC_bec4a.dir/src.c.o -MF CMakeFiles/cmTC_bec4a.dir/src.c.o.d -o CMakeFiles/cmTC_bec4a.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-eGo2P7/src.c
+        Linking C executable cmTC_bec4a
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bec4a.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_bec4a.dir/src.c.o -o cmTC_bec4a
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusConfig.cmake:114 (check_c_compiler_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test Wall_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqlMM9"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqlMM9"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "Wall_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqlMM9'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_0c146/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_0c146.dir/build.make CMakeFiles/cmTC_0c146.dir/build
+        Building C object CMakeFiles/cmTC_0c146.dir/src.c.o
+        /usr/bin/cc -DWall_SUPPORTED  -std=gnu99   -Wall -MD -MT CMakeFiles/cmTC_0c146.dir/src.c.o -MF CMakeFiles/cmTC_0c146.dir/src.c.o.d -o CMakeFiles/cmTC_0c146.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-WqlMM9/src.c
+        Linking C executable cmTC_0c146
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_0c146.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_0c146.dir/src.c.o -o cmTC_0c146
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusConfig.cmake:114 (check_c_compiler_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test W_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-OcjP5b"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-OcjP5b"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "W_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-OcjP5b'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_2d1fd/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_2d1fd.dir/build.make CMakeFiles/cmTC_2d1fd.dir/build
+        Building C object CMakeFiles/cmTC_2d1fd.dir/src.c.o
+        /usr/bin/cc -DW_SUPPORTED  -std=gnu99   -W -MD -MT CMakeFiles/cmTC_2d1fd.dir/src.c.o -MF CMakeFiles/cmTC_2d1fd.dir/src.c.o.d -o CMakeFiles/cmTC_2d1fd.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-OcjP5b/src.c
+        Linking C executable cmTC_2d1fd
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2d1fd.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_2d1fd.dir/src.c.o -o cmTC_2d1fd
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusConfig.cmake:114 (check_c_compiler_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test Wstrictprototypes_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HuUwom"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HuUwom"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "Wstrictprototypes_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HuUwom'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_e6cea/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_e6cea.dir/build.make CMakeFiles/cmTC_e6cea.dir/build
+        Building C object CMakeFiles/cmTC_e6cea.dir/src.c.o
+        /usr/bin/cc -DWstrictprototypes_SUPPORTED  -std=gnu99   -Wstrict-prototypes -MD -MT CMakeFiles/cmTC_e6cea.dir/src.c.o -MF CMakeFiles/cmTC_e6cea.dir/src.c.o.d -o CMakeFiles/cmTC_e6cea.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-HuUwom/src.c
+        Linking C executable cmTC_e6cea
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_e6cea.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_e6cea.dir/src.c.o -o cmTC_e6cea
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusConfig.cmake:114 (check_c_compiler_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test Wextra_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-jseo8Q"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-jseo8Q"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "Wextra_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-jseo8Q'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_bac1b/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_bac1b.dir/build.make CMakeFiles/cmTC_bac1b.dir/build
+        Building C object CMakeFiles/cmTC_bac1b.dir/src.c.o
+        /usr/bin/cc -DWextra_SUPPORTED  -std=gnu99   -Wextra -MD -MT CMakeFiles/cmTC_bac1b.dir/src.c.o -MF CMakeFiles/cmTC_bac1b.dir/src.c.o.d -o CMakeFiles/cmTC_bac1b.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-jseo8Q/src.c
+        Linking C executable cmTC_bac1b
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_bac1b.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_bac1b.dir/src.c.o -o cmTC_bac1b
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusConfig.cmake:114 (check_c_compiler_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test Wcastalign_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-3PysYt"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-3PysYt"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "Wcastalign_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-3PysYt'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_a0b97/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_a0b97.dir/build.make CMakeFiles/cmTC_a0b97.dir/build
+        Building C object CMakeFiles/cmTC_a0b97.dir/src.c.o
+        /usr/bin/cc -DWcastalign_SUPPORTED  -std=gnu99   -Wcast-align -MD -MT CMakeFiles/cmTC_a0b97.dir/src.c.o -MF CMakeFiles/cmTC_a0b97.dir/src.c.o.d -o CMakeFiles/cmTC_a0b97.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-3PysYt/src.c
+        Linking C executable cmTC_a0b97
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a0b97.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_a0b97.dir/src.c.o -o cmTC_a0b97
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusConfig.cmake:114 (check_c_compiler_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test Wnestedexterns_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-kWyOXc"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-kWyOXc"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "Wnestedexterns_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-kWyOXc'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_7e0c9/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_7e0c9.dir/build.make CMakeFiles/cmTC_7e0c9.dir/build
+        Building C object CMakeFiles/cmTC_7e0c9.dir/src.c.o
+        /usr/bin/cc -DWnestedexterns_SUPPORTED  -std=gnu99   -Wnested-externs -MD -MT CMakeFiles/cmTC_7e0c9.dir/src.c.o -MF CMakeFiles/cmTC_7e0c9.dir/src.c.o.d -o CMakeFiles/cmTC_7e0c9.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-kWyOXc/src.c
+        Linking C executable cmTC_7e0c9
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_7e0c9.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_7e0c9.dir/src.c.o -o cmTC_7e0c9
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckSourceCompiles.cmake:104 (try_compile)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/Internal/CheckCompilerFlag.cmake:18 (cmake_check_source_compiles)"
+      - "/opt/nordic/ncs/toolchains/0c0f19d91c/share/cmake/Modules/CheckCCompilerFlag.cmake:105 (cmake_check_compiler_flag)"
+      - "cmake/OpusConfig.cmake:114 (check_c_compiler_flag)"
+      - "CMakeLists.txt:11 (include)"
+    checks:
+      - "Performing Test Wshadow_SUPPORTED"
+    directories:
+      source: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9Mt5Wf"
+      binary: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9Mt5Wf"
+    cmakeVariables:
+      CMAKE_C_FLAGS: ""
+      CMAKE_C_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+      CMAKE_MODULE_PATH: "/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/cmake"
+      CMAKE_OSX_ARCHITECTURES: ""
+      CMAKE_OSX_DEPLOYMENT_TARGET: ""
+      CMAKE_OSX_SYSROOT: ""
+    buildResult:
+      variable: "Wshadow_SUPPORTED"
+      cached: true
+      stdout: |
+        Change Dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9Mt5Wf'
+        
+        Run Build Command(s): /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E env VERBOSE=1 /usr/bin/make -f Makefile cmTC_74171/fast
+        /Library/Developer/CommandLineTools/usr/bin/make  -f CMakeFiles/cmTC_74171.dir/build.make CMakeFiles/cmTC_74171.dir/build
+        Building C object CMakeFiles/cmTC_74171.dir/src.c.o
+        /usr/bin/cc -DWshadow_SUPPORTED  -std=gnu99   -Wshadow -MD -MT CMakeFiles/cmTC_74171.dir/src.c.o -MF CMakeFiles/cmTC_74171.dir/src.c.o.d -o CMakeFiles/cmTC_74171.dir/src.c.o -c /Users/alexburton/Documents/GitHub/audio-over-ble/third_party/opus-1.6.1/build-host-make/CMakeFiles/CMakeScratch/TryCompile-9Mt5Wf/src.c
+        Linking C executable cmTC_74171
+        /opt/nordic/ncs/toolchains/0c0f19d91c/bin/cmake -E cmake_link_script CMakeFiles/cmTC_74171.dir/link.txt --verbose=1
+        /usr/bin/cc -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/cmTC_74171.dir/src.c.o -o cmTC_74171
+        
+      exitCode: 0
+...

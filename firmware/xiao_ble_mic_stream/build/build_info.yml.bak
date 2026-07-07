@@ -1,0 +1,22 @@
+cmake:
+  board:
+    name: 'xiao_ble'
+    path:
+     - '/opt/nordic/ncs/v3.3.0/zephyr/boards/seeed/xiao_ble'
+    qualifiers: 'nrf52840/sense'
+    revision: ''
+  images:
+   - name: 'xiao_ble_mic_stream'
+     source-dir: '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream'
+     type: 'MAIN'
+  kconfig:
+    files:
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/empty.conf'
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/empty.conf'
+    user-files:
+     - '/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/empty.conf'
+version: '0.1.0'
+west:
+  command: '/opt/nordic/ncs/toolchains/0c0f19d91c/bin/west build --build-dir /Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build /Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream --pristine --board xiao_ble/nrf52840/sense -- -DCONFIG_DEBUG_THREAD_INFO=y'
+  topdir: '/opt/nordic/ncs/v3.3.0'
+  version: '1.5.0'

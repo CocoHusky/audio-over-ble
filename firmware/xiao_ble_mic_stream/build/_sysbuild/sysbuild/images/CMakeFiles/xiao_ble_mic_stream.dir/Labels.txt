@@ -1,0 +1,13 @@
+# Target labels
+ xiao_ble_mic_stream
+# Source files and their labels
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/CMakeFiles/xiao_ble_mic_stream
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/CMakeFiles/xiao_ble_mic_stream.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/CMakeFiles/xiao_ble_mic_stream-complete.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-build.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-configure.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-download.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-install.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-mkdir.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-patch.rule
+/Users/alexburton/Documents/GitHub/audio-over-ble/firmware/xiao_ble_mic_stream/build/_sysbuild/sysbuild/images/xiao_ble_mic_stream-prefix/src/xiao_ble_mic_stream-stamp/xiao_ble_mic_stream-update.rule
